@@ -1,0 +1,989 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Skills Management - Admin{% endblock %}
+
+{% block page_title %}Skills Management{% endblock %}
+{% block page_subtitle %}Manage your technical and professional skills{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Skills Management Specific Styles */
+    .back-navigation {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .back-btn {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: transparent;
+        color: var(--text-color);
+        border: 2px solid var(--overlay-color);
+        min-height: 44px;
+    }
+
+    .back-btn:hover {
+        background: var(--overlay-color);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .card-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--overlay-color);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-header h2 {
+        font-size: 1.8rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-header p {
+        color: var(--text-color);
+        opacity: 0.8;
+        font-size: 0.95rem;
+    }
+
+    .skill-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-title {
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--overlay-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.3rem;
+    }
+
+    /* Flexbox Form Layout */
+    .form-flex {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0;
+        flex: 1;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        border: 2px solid var(--overlay-color);
+        background: var(--secondary-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        min-height: 44px;
+        flex: 1;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px var(--shadow-color);
+        transform: translateY(-2px);
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    /* Edit Form Styles */
+    .edit-form-container {
+        display: none;
+        margin-top: 2rem;
+    }
+
+    .edit-form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--overlay-color);
+    }
+
+    /* Skills List Styles - Simplified */
+    .skills-flex {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .skill-item {
+        background: var(--secondary-bg);
+        border: 2px solid var(--overlay-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .skill-item:hover {
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    .skill-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .skill-main-info {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .skill-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .skill-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        line-height: 1.3;
+        word-wrap: break-word;
+        flex: 1;
+        min-width: 200px;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .skill-icon {
+        font-size: 1.5rem;
+        color: var(--accent-color);
+        flex-shrink: 0;
+        width: 30px;
+        text-align: center;
+    }
+
+    /* Action Buttons - Simplified */
+    .skill-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .action-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        min-width: 100px;
+        justify-content: center;
+    }
+
+    .btn-edit {
+        background: transparent;
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .btn-edit:hover {
+        background: var(--accent-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: transparent;
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+
+    .btn-delete:hover {
+        background: #ff6b6b;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-size: 1.3rem;
+    }
+
+    /* Button Styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 1rem;
+        border: none;
+        min-height: 44px;
+    }
+
+    .btn-primary {
+        background: var(--accent-gradient);
+        color: white;
+        box-shadow: 0 3px 12px var(--shadow-color);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--text-color);
+        border: 2px solid var(--overlay-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--overlay-color);
+        border-color: var(--accent-color);
+    }
+
+    /* ========== RESPONSIVE MEDIA QUERIES ========== */
+
+    /* Mobile: <= 600px (Default styles are mobile first) */
+
+    /* Tablets: 601px - 768px */
+    @media (min-width: 601px) {
+        .card-header h2 {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+        }
+        
+        .form-row {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(50% - 0.75rem);
+            min-width: 250px;
+        }
+        
+        .form-input {
+            padding: 1rem 1.2rem;
+            font-size: 1.05rem;
+        }
+        
+        .skill-header {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .skill-title-row {
+            margin-bottom: 0;
+            justify-content: flex-start;
+            flex: 1;
+        }
+        
+        .skill-actions {
+            justify-content: flex-end;
+            min-width: 200px;
+        }
+    }
+
+    /* Laptops: 769px - 992px */
+    @media (min-width: 769px) {
+        .card-header h2 {
+            font-size: 2.1rem;
+        }
+        
+        .section-title {
+            font-size: 1.45rem;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(50% - 1rem);
+        }
+        
+        .form-input {
+            padding: 1.1rem 1.3rem;
+        }
+        
+        .form-hint {
+            font-size: 0.9rem;
+        }
+        
+        .skill-title {
+            font-size: 1.4rem;
+        }
+        
+        .skill-icon {
+            font-size: 1.6rem;
+        }
+        
+        .action-btn {
+            min-width: 110px;
+            padding: 0.8rem 1.4rem;
+        }
+    }
+
+    /* Large Screens: 993px - 1200px */
+    @media (min-width: 993px) {
+        .card-header h2 {
+            font-size: 2.2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(33.333% - 1rem);
+        }
+        
+        .form-input {
+            padding: 1.2rem 1.4rem;
+            font-size: 1.1rem;
+        }
+        
+        .form-group label {
+            font-size: 1rem;
+        }
+        
+        .skill-title {
+            font-size: 1.5rem;
+        }
+        
+        .skill-icon {
+            font-size: 1.7rem;
+        }
+        
+        .action-btn {
+            min-width: 120px;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Extra Large Screens: 1201px and above */
+    @media (min-width: 1201px) {
+        .card-header h2 {
+            font-size: 2.3rem;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(25% - 1.125rem);
+        }
+        
+        .form-input {
+            padding: 1.3rem 1.5rem;
+        }
+        
+        .form-group label {
+            font-size: 1.05rem;
+        }
+        
+        .form-hint {
+            font-size: 0.95rem;
+        }
+        
+        .skill-title {
+            font-size: 1.6rem;
+        }
+        
+        .skill-icon {
+            font-size: 1.8rem;
+        }
+        
+        .action-btn {
+            min-width: 130px;
+            padding: 0.9rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Samsung A26 Specific Optimizations */
+    @media (max-width: 412px) and (min-height: 869px) {
+        .card-header h2 {
+            font-size: 1.6rem;
+        }
+        
+        .form-input {
+            padding: 0.7rem 0.9rem;
+            font-size: 0.95rem;
+        }
+        
+        .skill-item {
+            padding: 1.2rem;
+        }
+        
+        .skill-title {
+            font-size: 1.2rem;
+        }
+        
+        .skill-icon {
+            font-size: 1.4rem;
+        }
+        
+        .skill-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .action-btn {
+            width: 100%;
+            min-width: auto;
+        }
+        
+        .form-actions {
+            justify-content: center;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .edit-form-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .edit-form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Small Mobile Devices (below 400px) */
+    @media (max-width: 400px) {
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .form-input {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .skill-item {
+            padding: 1rem;
+        }
+        
+        .skill-title {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            min-width: 150px;
+        }
+        
+        .skill-icon {
+            font-size: 1.3rem;
+        }
+        
+        .action-btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            min-height: 42px;
+            min-width: 90px;
+        }
+        
+        .form-group label {
+            font-size: 0.9rem;
+        }
+        
+        .form-hint {
+            font-size: 0.8rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Very Small Mobile (below 320px) */
+    @media (max-width: 320px) {
+        .card-header h2 {
+            font-size: 1.4rem;
+        }
+        
+        .form-input {
+            padding: 0.5rem 0.7rem;
+            font-size: 0.85rem;
+        }
+        
+        .skill-item {
+            padding: 0.8rem;
+        }
+        
+        .skill-title {
+            font-size: 1rem;
+            min-width: 120px;
+        }
+        
+        .skill-icon {
+            font-size: 1.2rem;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+            min-height: 40px;
+            min-width: 80px;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+            min-height: 40px;
+        }
+        
+        .back-btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Touch optimization for mobile */
+    @media (hover: none) {
+        .back-btn:hover,
+        .skill-item:hover,
+        .form-input:hover,
+        .action-btn:hover {
+            transform: none;
+        }
+        
+        .back-btn:active,
+        .skill-item:active,
+        .form-input:active,
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .form-input:focus {
+            transform: none;
+        }
+    }
+
+    /* Enhanced focus states for accessibility */
+    .form-input:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
+    }
+
+    /* Loading animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+        }
+        
+        .animate-spin {
+            animation: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back Navigation -->
+<div class="back-navigation">
+    <a href="{% url 'admin_dashboard' %}" class="back-btn">
+        <i class="ri-arrow-left-line"></i>
+        Back to Dashboard
+    </a>
+</div>
+
+<!-- Add New Skill Card -->
+<div class="content-card">
+    <div class="card-header">
+        <h2>
+            <i class="ri-add-circle-line"></i>
+            Add New Skill
+        </h2>
+        <p>Add a new technical or professional skill</p>
+    </div>
+
+    <form method="post" action="{% url 'add_skill' %}" class="skill-form">
+        {% csrf_token %}
+        <div class="form-flex">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Title: *</label>
+                    <input type="text" 
+                           name="title" 
+                           required 
+                           class="form-input"
+                           placeholder="e.g., JavaScript, Python, UI/UX Design">
+                </div>
+                
+                <div class="form-group">
+                    <label>Percentage: *</label>
+                    <input type="number" 
+                           name="percentage" 
+                           min="0" 
+                           max="100" 
+                           required 
+                           class="form-input"
+                           placeholder="0-100">
+                    <span class="form-hint">Enter proficiency level (0-100%)</span>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Skill Type: *</label>
+                    <input type="text" 
+                           name="skill_type" 
+                           required 
+                           class="form-input"
+                           placeholder="e.g., Programming, Design, Language, etc.">
+                    <span class="form-hint">Enter skill category (Frontend, Backend, Database, Soft Skills, etc.)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Icon Class: *</label>
+                    <input type="text" 
+                           name="icon_class" 
+                           required 
+                           class="form-input"
+                           placeholder="fab fa-js">
+                    <span class="form-hint">Examples: fab fa-js (JavaScript), fab fa-python (Python), fab fa-html5 (HTML5)</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="ri-add-line"></i>
+                Add Skill
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Edit Skill Card (Hidden by default) -->
+<div id="edit-skill-form" class="content-card edit-form-container">
+    <div class="card-header">
+        <h2>
+            <i class="ri-edit-box-line"></i>
+            Edit Skill
+        </h2>
+        <p>Update skill details and proficiency level</p>
+    </div>
+
+    <form method="post" action="" id="edit-skill-form-action">
+        {% csrf_token %}
+        <input type="hidden" name="skill_id" id="edit-skill-id">
+        
+        <div class="form-flex">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Title: *</label>
+                    <input type="text" 
+                           name="title" 
+                           id="edit-skill-title" 
+                           required 
+                           class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label>Percentage: *</label>
+                    <input type="number" 
+                           name="percentage" 
+                           id="edit-skill-percentage" 
+                           min="0" 
+                           max="100" 
+                           required 
+                           class="form-input">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Skill Type: *</label>
+                    <input type="text" 
+                           name="skill_type" 
+                           id="edit-skill-type" 
+                           required 
+                           class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label>Icon Class: *</label>
+                    <input type="text" 
+                           name="icon_class" 
+                           id="edit-skill-icon-class" 
+                           required 
+                           class="form-input">
+                </div>
+            </div>
+        </div>
+        
+        <div class="edit-form-actions">
+            <button type="button" class="btn btn-outline" onclick="hideEditSkillForm()">
+                <i class="ri-close-line"></i>
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="ri-save-line"></i>
+                Update Skill
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Existing Skills Card - Simplified -->
+<div class="content-card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2>
+            <i class="ri-tools-line"></i>
+            Existing Skills ({{ skills|length }})
+        </h2>
+        <p>Manage your current skills - showing titles only with actions</p>
+    </div>
+
+    {% if skills %}
+    <div class="skills-flex">
+        {% for skill in skills %}
+        <div class="skill-item">
+            <div class="skill-header">
+                <div class="skill-main-info">
+                    <div class="skill-title-row">
+                        <div class="skill-title">
+                            <i class="{{ skill.icon_class }} skill-icon"></i>
+                            {{ skill.title }}
+                        </div>
+                        <div class="skill-actions">
+                            <button class="action-btn btn-edit" onclick="showEditSkillForm(
+                                '{{ skill.id }}', 
+                                '{{ skill.title|escapejs }}', 
+                                '{{ skill.percentage }}', 
+                                '{{ skill.skill_type|escapejs }}', 
+                                '{{ skill.icon_class|escapejs }}'
+                            )">
+                                <i class="ri-edit-line"></i>
+                                Edit
+                            </button>
+                            <a href="{% url 'delete_skill' skill.id %}" 
+                               class="action-btn btn-delete" 
+                               onclick="return confirm('Are you sure you want to delete this skill?')">
+                                <i class="ri-delete-bin-line"></i>
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="ri-tools-line"></i>
+        <h3>No Skills Yet</h3>
+        <p>Add your first skill using the form above.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Skills Edit Functions
+function showEditSkillForm(id, title, percentage, skillType, iconClass) {
+    const editForm = document.getElementById('edit-skill-form');
+    editForm.style.display = 'block';
+    
+    // Set form values
+    document.getElementById('edit-skill-id').value = id;
+    document.getElementById('edit-skill-title').value = title;
+    document.getElementById('edit-skill-percentage').value = percentage;
+    document.getElementById('edit-skill-type').value = skillType;
+    document.getElementById('edit-skill-icon-class').value = iconClass;
+    
+    // Update form action with correct skill ID
+    const form = document.getElementById('edit-skill-form-action');
+    form.action = "{% url 'update_skill' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+    
+    // Scroll to edit form
+    editForm.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+    });
+}
+
+function hideEditSkillForm() {
+    document.getElementById('edit-skill-form').style.display = 'none';
+}
+
+// Add focus styles to form elements
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.form-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Add percentage validation
+    const percentageInputs = document.querySelectorAll('input[name="percentage"], #edit-skill-percentage');
+    percentageInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value < 0) this.value = 0;
+            if (value > 100) this.value = 100;
+        });
+    });
+
+    // Form submission feedback
+    const forms = document.querySelectorAll('.skill-form, #edit-skill-form-action');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Saving...';
+                submitBtn.disabled = true;
+                
+                // Revert after 5 seconds in case of error
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 5000);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

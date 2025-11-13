@@ -1,0 +1,730 @@
+{% extends 'portfolio/base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Skills Section - Mobile First */
+    .page-section {
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        min-height: 90vh;
+    }
+    
+    /* Skills intro paragraph */
+    .skills-intro {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .skills-intro p {
+        font-size: 0.95rem;
+        color: var(--text-color);
+        opacity: 0.8;
+        line-height: 1.6;
+        margin: 0;
+        text-shadow: 0 0 4px var(--shadow-color);
+    }
+    
+    /* Mobile: 3-column flexbox */
+    .skills-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        justify-content: center;
+    }
+    
+    .skill-card-5col {
+        background: var(--card-bg);
+        padding: 0.8rem 0.3rem;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px var(--shadow-color);
+        text-align: center;
+        transition: all 0.4s ease;
+        border: 2px solid var(--overlay-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100px;
+        height: auto;
+        width: calc(33.333% - 0.53rem);
+        overflow: visible;
+        position: relative;
+        backdrop-filter: blur(10px);
+        flex-shrink: 0;
+    }
+
+    .skill-card-5col::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--accent-gradient);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+        border-radius: 8px;
+    }
+    
+    .skill-card-5col:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: var(--accent-color);
+    }
+
+    .skill-card-5col:hover::before {
+        opacity: 0.1;
+    }
+    
+    .skill-icon-5col {
+        font-size: 1.4rem;
+        color: var(--accent-color);
+        margin-bottom: 0.4rem;
+        flex-shrink: 0;
+        text-shadow: 0 0 12px var(--shadow-color);
+        transition: all 0.4s ease;
+    }
+
+    .skill-card-5col:hover .skill-icon-5col {
+        transform: scale(1.1);
+        color: var(--accent-color);
+        text-shadow: 0 0 18px var(--shadow-color);
+    }
+    
+    .skill-card-5col h3 {
+        font-size: 0.75rem;
+        color: var(--text-color);
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.3;
+        width: 100%;
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        display: block;
+        overflow: visible;
+        text-overflow: unset;
+        text-align: center;
+        padding: 0 0.2rem;
+        min-height: 2.2em;
+        text-shadow: 0 0 4px var(--shadow-color);
+        transition: all 0.4s ease;
+    }
+
+    .skill-card-5col:hover h3 {
+        color: var(--accent-color);
+        text-shadow: 0 0 8px var(--shadow-color);
+    }
+    
+    /* Special styling for cards with longer text */
+    .skill-card-5col.long-text {
+        min-height: 110px;
+    }
+    
+    .skill-card-5col.long-text h3 {
+        font-size: 0.7rem;
+        line-height: 1.2;
+    }
+
+    /* Section Title Styling */
+    .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        width: 100%;
+    }
+
+    .section-title h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px var(--shadow-color);
+    }
+
+    .section-title .divider {
+        width: 60px;
+        height: 3px;
+        background: var(--accent-gradient);
+        margin: 0 auto;
+        border-radius: 2px;
+        box-shadow: 0 0 15px var(--shadow-color);
+    }
+
+    /* Fallback skills styling */
+    .fallback-skill {
+        background: var(--card-bg);
+        padding: 0.8rem 0.3rem;
+        border-radius: 10px;
+        box-shadow: 0 6px 20px var(--shadow-color);
+        text-align: center;
+        transition: all 0.4s ease;
+        border: 2px solid var(--overlay-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100px;
+        height: auto;
+        width: calc(33.333% - 0.53rem);
+        overflow: visible;
+        backdrop-filter: blur(10px);
+        cursor: default;
+        flex-shrink: 0;
+    }
+
+    .fallback-skill:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: var(--accent-color);
+    }
+
+    .fallback-skill:hover .skill-icon-5col {
+        transform: scale(1.1);
+        color: var(--accent-color);
+        text-shadow: 0 0 18px var(--shadow-color);
+    }
+
+    .fallback-skill:hover h3 {
+        color: var(--accent-color);
+        text-shadow: 0 0 8px var(--shadow-color);
+    }
+    
+    /* Animation for skill cards */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .skill-card-5col,
+    .fallback-skill {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    /* Staggered animation delays */
+    .skill-card-5col:nth-child(1),
+    .fallback-skill:nth-child(1) { animation-delay: 0.1s; }
+    .skill-card-5col:nth-child(2),
+    .fallback-skill:nth-child(2) { animation-delay: 0.15s; }
+    .skill-card-5col:nth-child(3),
+    .fallback-skill:nth-child(3) { animation-delay: 0.2s; }
+    .skill-card-5col:nth-child(4),
+    .fallback-skill:nth-child(4) { animation-delay: 0.25s; }
+    .skill-card-5col:nth-child(5),
+    .fallback-skill:nth-child(5) { animation-delay: 0.3s; }
+    .skill-card-5col:nth-child(6),
+    .fallback-skill:nth-child(6) { animation-delay: 0.35s; }
+    .skill-card-5col:nth-child(7),
+    .fallback-skill:nth-child(7) { animation-delay: 0.4s; }
+    .skill-card-5col:nth-child(8),
+    .fallback-skill:nth-child(8) { animation-delay: 0.45s; }
+    .skill-card-5col:nth-child(9),
+    .fallback-skill:nth-child(9) { animation-delay: 0.5s; }
+    .skill-card-5col:nth-child(10),
+    .fallback-skill:nth-child(10) { animation-delay: 0.55s; }
+    
+    /* ========== RESPONSIVE MEDIA QUERIES ========== */
+
+    /* Tablets: 601px - 768px */
+    @media (min-width: 601px) and (max-width: 768px) {
+        .page-section {
+            padding: 1.5rem;
+        }
+        
+        .skills-container {
+            gap: 1rem;
+            max-width: 550px;
+        }
+        
+        .skill-card-5col,
+        .fallback-skill {
+            padding: 1rem 0.5rem;
+            min-height: 120px;
+            border-radius: 12px;
+            width: calc(33.333% - 0.67rem);
+        }
+        
+        .skill-card-5col.long-text {
+            min-height: 130px;
+        }
+        
+        .skill-icon-5col {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skill-card-5col h3 {
+            font-size: 0.85rem;
+            min-height: 2.4em;
+        }
+        
+        .skill-card-5col.long-text h3 {
+            font-size: 0.8rem;
+        }
+
+        .section-title h2 {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            margin-bottom: 2.5rem;
+        }
+        
+        .skills-intro {
+            margin-bottom: 3rem;
+            max-width: 600px;
+        }
+        
+        .skills-intro p {
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+    }
+
+    /* Laptops: 769px - 992px */
+    @media (min-width: 769px) and (max-width: 992px) {
+        .page-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .skills-container { 
+            gap: 1.2rem; 
+            max-width: 700px;
+        }
+        
+        .skill-card-5col,
+        .fallback-skill {
+            padding: 1.2rem 0.8rem;
+            min-height: 130px;
+            border-radius: 15px;
+            width: calc(33.333% - 0.8rem);
+        }
+        
+        .skill-card-5col.long-text {
+            min-height: 140px;
+        }
+        
+        .skill-icon-5col {
+            font-size: 1.8rem;
+            margin-bottom: 0.6rem;
+        }
+        
+        .skill-card-5col h3 {
+            font-size: 0.9rem;
+            min-height: 2.6em;
+        }
+        
+        .skill-card-5col.long-text h3 {
+            font-size: 0.85rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.3rem;
+        }
+        
+        .section-title .divider {
+            width: 70px;
+            height: 4px;
+        }
+        
+        .section-title {
+            margin-bottom: 3rem;
+        }
+        
+        .skills-intro {
+            margin-bottom: 3.5rem;
+            max-width: 700px;
+        }
+        
+        .skills-intro p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+    }
+
+    /* Large Screens: 993px - 1200px */
+    @media (min-width: 993px) and (max-width: 1200px) {
+        .page-section {
+            padding: 2rem 2rem;
+        }
+        
+        .skills-container { 
+            gap: 1.5rem; 
+            max-width: 800px;
+        }
+        
+        .skill-card-5col,
+        .fallback-skill {
+            padding: 1.5rem 1rem;
+            min-height: 140px;
+            border-radius: 18px;
+            width: calc(33.333% - 1rem);
+        }
+        
+        .skill-card-5col.long-text {
+            min-height: 150px;
+        }
+        
+        .skill-icon-5col {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .skill-card-5col h3 {
+            font-size: 1rem;
+            min-height: 2.8em;
+        }
+        
+        .skill-card-5col.long-text h3 {
+            font-size: 0.95rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.6rem;
+        }
+        
+        .section-title .divider {
+            width: 80px;
+            height: 4px;
+        }
+        
+        .section-title {
+            margin-bottom: 3.5rem;
+        }
+        
+        .skills-intro {
+            margin-bottom: 4rem;
+            max-width: 800px;
+        }
+        
+        .skills-intro p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+        }
+    }
+
+    /* Extra Large Screens: 1201px and above */
+    @media (min-width: 1201px) {
+        .page-section {
+            padding: 3rem 2rem;
+        }
+        
+        .skills-container { 
+            max-width: 900px;
+            gap: 2rem;
+        }
+        
+        .skill-card-5col,
+        .fallback-skill {
+            padding: 1.8rem 1.2rem;
+            min-height: 150px;
+            width: calc(33.333% - 1.33rem);
+        }
+        
+        .skill-card-5col.long-text {
+            min-height: 160px;
+        }
+        
+        .skill-icon-5col {
+            font-size: 2.2rem;
+        }
+        
+        .skill-card-5col h3 {
+            font-size: 1.1rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.8rem;
+        }
+        
+        .skills-intro p {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Small Mobile Optimization (below 400px) */
+    @media (max-width: 400px) {
+        .page-section {
+            padding: 0.8rem;
+        }
+        
+        .skills-container {
+            gap: 0.7rem;
+            max-width: 350px;
+        }
+        
+        .skill-card-5col,
+        .fallback-skill {
+            padding: 0.7rem 0.25rem;
+            min-height: 95px;
+            border-radius: 8px;
+            width: calc(33.333% - 0.47rem);
+        }
+        
+        .skill-card-5col.long-text {
+            min-height: 105px;
+        }
+        
+        .skill-icon-5col {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .skill-card-5col h3 {
+            font-size: 0.7rem;
+            min-height: 2em;
+        }
+        
+        .skill-card-5col.long-text h3 {
+            font-size: 0.65rem;
+        }
+
+        .section-title h2 {
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .section-title {
+            margin-bottom: 1.5rem;
+        }
+        
+        .skills-intro {
+            margin-bottom: 2rem;
+        }
+        
+        .skills-intro p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+    }
+
+    /* Very Small Mobile Devices - 2 columns */
+    @media (max-width: 320px) {
+        .skills-container {
+            max-width: 280px;
+            gap: 0.8rem;
+        }
+        
+        .skill-card-5col,
+        .fallback-skill {
+            padding: 0.8rem 0.3rem;
+            min-height: 100px;
+            width: calc(50% - 0.4rem);
+        }
+        
+        .skill-card-5col.long-text {
+            min-height: 110px;
+        }
+        
+        .skill-card-5col h3 {
+            font-size: 0.75rem;
+        }
+        
+        .skill-icon-5col {
+            font-size: 1.4rem;
+        }
+    }
+
+    /* Container styling */
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Touch optimization for mobile */
+    @media (hover: none) {
+        .skill-card-5col:hover,
+        .fallback-skill:hover {
+            transform: none;
+        }
+        
+        .skill-card-5col:active,
+        .fallback-skill:active {
+            transform: scale(0.98);
+        }
+    }
+
+    /* High-resolution screens */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .skill-card-5col,
+        .fallback-skill {
+            border-width: 1.5px;
+        }
+    }
+
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .skill-card-5col,
+        .fallback-skill,
+        .skill-icon-5col {
+            animation: none;
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Technical Skills</h2>
+            <div class="divider"></div>
+        </div>
+        
+        <!-- Skills Introduction Paragraph -->
+        <div class="skills-intro">
+            <p>
+                I have extensive experience working with these technologies and frameworks, 
+                continuously expanding my expertise to deliver innovative and efficient solutions. 
+                Each skill represents hands-on experience in real-world projects and applications.
+            </p>
+        </div>
+        
+        <div class="skills-container">
+            {% for skill in skills %}
+            <div class="skill-card-5col {% if skill.title|length > 15 or '(' in skill.title or '*' in skill.title %}long-text{% endif %}">
+                <div class="skill-icon-5col">
+                    <i class="{{ skill.icon_class }}"></i>
+                </div>
+                <h3>{{ skill.title|linebreaksbr }}</h3>
+            </div>
+            {% empty %}
+            <!-- Fallback skills when no data from backend -->
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-js-square"></i>
+                </div>
+                <h3>Javascript</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-java"></i>
+                </div>
+                <h3>Java</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-php"></i>
+                </div>
+                <h3>PHP</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fas fa-redo-alt"></i>
+                </div>
+                <h3>Reset</h3>
+            </div>
+            <div class="fallback-skill long-text">
+                <div class="skill-icon-5col">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <h3>MERN Stack</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-aws"></i>
+                </div>
+                <h3>AWS</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-python"></i>
+                </div>
+                <h3>Python</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-react"></i>
+                </div>
+                <h3>React</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-node-js"></i>
+                </div>
+                <h3>Node.js</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>MongoDB</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-html5"></i>
+                </div>
+                <h3>HTML5</h3>
+            </div>
+            <div class="fallback-skill">
+                <div class="skill-icon-5col">
+                    <i class="fab fa-css3-alt"></i>
+                </div>
+                <h3>CSS3</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll effect to navbar
+    window.addEventListener('scroll', function() {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 100) {
+            nav.style.background = document.body.classList.contains('dark-mode') 
+                ? 'rgba(26, 20, 48, 0.95)' 
+                : 'rgba(250, 248, 255, 0.98)';
+        } else {
+            nav.style.background = document.body.classList.contains('dark-mode')
+                ? 'rgba(26, 20, 48, 0.9)'
+                : 'rgba(250, 248, 255, 0.95)';
+        }
+    });
+
+    // Touch optimization for mobile devices
+    if ('ontouchstart' in window) {
+        document.querySelectorAll('.skill-card-5col, .fallback-skill').forEach(card => {
+            card.style.cursor = 'pointer';
+            
+            // Add touch feedback
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

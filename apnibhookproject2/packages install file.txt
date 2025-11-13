@@ -1,0 +1,13 @@
+1-python -m venv apnibhook        ( yeh virtual enviroment banaye ga python ky work ky leay )
+2-.\apnibhook\scripts\activate    ( yeh virtual enviroment ko activate karay ga )
+3-pip install django              (ab python easily work karay gi iskay bad)
+4-django-admin --version          (version batye gi)
+5-django-admin startproject apnibhookproject          (django files ka project banaye ga iskay bad )
+6-cd apnibhookproject 
+7-python manage.py startapp core     (Project name and there files )
+8-python manage makemigrations
+9- python manage.py migrate         (database work)
+10-python manage.py  makemigration      (sqlite work )
+11-cd apnibhook
+12-python manage.py startserver       (server start)
+13-pip freeze > requirements.txt     (saray packages list aajye gay)

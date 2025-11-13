@@ -1,0 +1,22 @@
+<!-- templates/create_user.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create User</title>
+</head>
+<body>
+    <h1>Create New User</h1>
+    <!-- Fix: Change form action to /users/add/ -->
+    <form method="POST" action="/users/add/">
+        {% csrf_token %}
+        <p>Name: <input type="text" name="name" required></p>
+        <p>Email: <input type="email" name="email" required></p>
+        <p>Age: <input type="number" name="age" required></p>
+        <button type="submit">Create User</button>
+    </form>
+    <br>
+    <a href="/users/">View All Users</a>
+    <br>
+    <a href="/">Home</a>
+</body>
+</html>

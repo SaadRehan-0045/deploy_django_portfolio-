@@ -1,0 +1,723 @@
+{% extends 'portfolio/base.html' %}
+
+{% block extra_css %}
+<style>
+    /* About Section - Responsive Flexbox Layout */
+    .about-main-section { 
+        min-height: 100vh;
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* Mobile First - Single Column Layout */
+    .about-flex-container { 
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .about-text { 
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--text-color);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        max-width: 100%;
+        text-shadow: 0 0 5px var(--shadow-color);
+        text-align: center;
+        width: 100%;
+        padding: 0;
+    }
+    
+    .about-image { 
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        padding: 0;
+    }
+    
+    /* Modern Image Container for Mobile */
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 250px;
+        height: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+
+    .main-image {
+        width: 100%;
+        max-width: 220px;
+        height: 260px;
+        background: var(--card-bg);
+        border-radius: 12px;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 6px 20px var(--shadow-color);
+        overflow: hidden;
+        border: 2px solid var(--overlay-color);
+        transition: all 0.4s ease;
+        z-index: 2;
+    }
+
+    .about-profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .main-image:hover .about-profile-image {
+        transform: scale(1.05);
+    }
+
+    .main-image:hover {
+        transform: translateX(-50%) translateY(-5px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: var(--accent-color);
+    }
+
+    .image-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--card-bg) 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        transition: all 0.4s ease;
+        font-size: 0.9rem;
+    }
+
+    .image-placeholder i {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.8;
+    }
+
+    .main-image:hover .image-placeholder {
+        background: linear-gradient(135deg, var(--accent-color) 0%, #b19cd9 100%);
+    }
+
+    /* Accent Boxes */
+    .accent-box {
+        width: 45px;
+        height: 45px;
+        background: var(--accent-color);
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        border-radius: 6px;
+        opacity: 0.7;
+        z-index: 1;
+        transition: all 0.4s ease;
+    }
+
+    .accent-box-2 {
+        width: 30px;
+        height: 30px;
+        background: var(--overlay-color);
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        border-radius: 4px;
+        opacity: 0.5;
+        z-index: 1;
+        transition: all 0.4s ease;
+    }
+
+    .image-container:hover .accent-box {
+        transform: translate(3px, 3px) rotate(10deg);
+        opacity: 0.9;
+    }
+
+    .image-container:hover .accent-box-2 {
+        transform: translate(-2px, -2px) rotate(-8deg);
+        opacity: 0.7;
+    }
+
+    /* Section Title */
+    .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 0 0.5rem;
+    }
+
+    .section-title h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px var(--shadow-color);
+    }
+
+    .section-title .divider {
+        width: 50px;
+        height: 3px;
+        background: var(--accent-gradient);
+        margin: 0 auto;
+        border-radius: 2px;
+        box-shadow: 0 0 10px var(--shadow-color);
+    }
+
+    /* Text content wrapper */
+    .text-content-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        white-space: pre-line;
+        line-height: 1.5;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .emergency-text-wrap {
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+        max-width: 100% !important;
+        white-space: pre-line !important;
+    }
+
+    .scrollable-content {
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 8px;
+        margin-top: 1rem;
+    }
+
+    .scrollable-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-track {
+        background: var(--overlay-color);
+        border-radius: 3px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 3px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-gradient);
+    }
+
+    /* Timeline Section */
+    .timeline-section { 
+        margin: 2.5rem 0;
+        min-height: auto;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .timeline-section h3 { 
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.4rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 15px var(--shadow-color);
+    }
+    
+    .timeline { 
+        margin: 1rem 0;
+        position: relative;
+        padding: 15px 10px;
+        width: 100%;
+    }
+    
+    .timeline-item { 
+        margin-bottom: 25px;
+        position: relative;
+        padding-left: 20px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        transition: all 0.3s ease;
+        max-width: 100%;
+    }
+
+    .timeline-item:hover {
+        transform: translateY(-2px);
+    }
+
+    .timeline-item:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    .timeline-item:after {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 16px;
+        bottom: -25px;
+        width: 2px;
+        background-color: var(--overlay-color);
+        z-index: 1;
+    }
+
+    .timeline-item:last-child:after {
+        display: none;
+    }
+    
+    .timeline-header { 
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+        align-items: flex-start;
+    }
+    
+    .timeline-title { 
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-color);
+        word-wrap: break-word;
+        max-width: 100%;
+    }
+    
+    .timeline-period { 
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-weight: 500;
+    }
+    
+    .timeline-subtitle { 
+        font-size: 0.9rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        word-wrap: break-word;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+    
+    .timeline-description { 
+        font-size: 0.85rem;
+        color: var(--text-color);
+        line-height: 1.5;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-line;
+        opacity: 0.8;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-style: italic;
+        padding: 1.5rem;
+        background: var(--overlay-color);
+        border-radius: 10px;
+        border: 2px dashed var(--overlay-color);
+        max-width: 100%;
+        margin: 0 auto;
+        font-size: 0.9rem;
+    }
+
+    /* ========== MEDIA QUERIES ========== */
+
+    /* Tablets (601px - 768px) */
+    @media (min-width: 601px) {
+        .about-main-section {
+            padding: 1.5rem;
+        }
+        
+        .about-flex-container {
+            flex-direction: row;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        
+        .about-text {
+            font-size: 0.95rem;
+            text-align: left;
+            padding-right: 1rem;
+        }
+        
+        .about-image {
+            justify-content: flex-start;
+            padding-left: 1rem;
+        }
+        
+        .main-image {
+            left: 0;
+            transform: none;
+        }
+        
+        .main-image:hover {
+            transform: translateY(-5px);
+        }
+        
+        .text-content-wrapper {
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        
+        .section-title h2 {
+            font-size: 1.8rem;
+        }
+        
+        .image-container {
+            max-width: 280px;
+            height: 340px;
+        }
+
+        .main-image {
+            max-width: 240px;
+            height: 300px;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.5rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.05rem;
+        }
+        
+        .timeline-period {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Laptops (769px - 992px) */
+    @media (min-width: 769px) {
+        .about-main-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .about-flex-container {
+            gap: 3rem;
+        }
+        
+        .about-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+        }
+        
+        .text-content-wrapper {
+            font-size: 1rem;
+        }
+        
+        .image-container {
+            max-width: 320px;
+            height: 380px;
+        }
+
+        .main-image {
+            max-width: 280px;
+            height: 340px;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.6rem;
+        }
+        
+        .timeline-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .timeline-title {
+            font-size: 1.1rem;
+            max-width: 70%;
+        }
+        
+        .timeline-period {
+            font-size: 0.95rem;
+        }
+        
+        .timeline-subtitle {
+            font-size: 1rem;
+        }
+        
+        .timeline-description {
+            font-size: 0.9rem;
+        }
+        
+        .accent-box {
+            width: 55px;
+            height: 55px;
+        }
+
+        .accent-box-2 {
+            width: 35px;
+            height: 35px;
+        }
+    }
+
+    /* Large Screens (993px - 1200px) */
+    @media (min-width: 993px) {
+        .about-main-section {
+            padding: 3rem 2rem;
+        }
+        
+        .about-flex-container {
+            gap: 4rem;
+        }
+        
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+        }
+        
+        .image-container {
+            max-width: 350px;
+            height: 420px;
+        }
+
+        .main-image {
+            max-width: 300px;
+            height: 370px;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.8rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.15rem;
+        }
+        
+        .timeline-period {
+            font-size: 1rem;
+        }
+        
+        .accent-box {
+            width: 60px;
+            height: 60px;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .accent-box-2 {
+            width: 40px;
+            height: 40px;
+            top: 25px;
+            right: 30px;
+        }
+    }
+
+    /* Extra Large Screens (1201px and above) */
+    @media (min-width: 1201px) {
+        .about-flex-container {
+            gap: 5rem;
+        }
+        
+        .about-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+        }
+        
+        .image-container {
+            max-width: 380px;
+            height: 460px;
+        }
+
+        .main-image {
+            max-width: 330px;
+            height: 410px;
+        }
+        
+        .main-image:hover {
+            transform: translateY(-8px);
+        }
+        
+        .timeline-section h3 {
+            font-size: 2rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.2rem;
+        }
+        
+        .accent-box {
+            width: 65px;
+            height: 65px;
+        }
+
+        .accent-box-2 {
+            width: 45px;
+            height: 45px;
+        }
+    }
+
+    /* Small Mobile Optimization (below 400px) */
+    @media (max-width: 400px) {
+        .about-main-section {
+            padding: 0.8rem;
+        }
+        
+        .about-text {
+            font-size: 0.85rem;
+        }
+        
+        .image-container {
+            max-width: 220px;
+            height: 280px;
+        }
+
+        .main-image {
+            max-width: 200px;
+            height: 240px;
+        }
+        
+        .section-title h2 {
+            font-size: 1.4rem;
+        }
+        
+        .text-content-wrapper {
+            font-size: 0.85rem;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.3rem;
+        }
+        
+        .timeline-title {
+            font-size: 0.95rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-main-section">
+    <div class="section-title">
+        <h2>About Me</h2>
+        <div class="divider"></div>
+    </div>
+    
+    <div class="about-flex-container">
+        <div class="about-text">
+            {% if about.personal_story %}
+                <div class="text-content-wrapper emergency-text-wrap {% if about.personal_story|length > 2000 %}scrollable-content{% endif %}">
+                    {{ about.personal_story|linebreaksbr }}
+                </div>
+            {% else %}
+                <div class="text-content-wrapper">
+                    I am a Software Engineer, specializing in full-stack development. My journey began with curiosity about how digital platforms work, and has evolved into building impactful applications using modern technologies. 
+                    My goal is to leverage my engineering background to create high-quality, scalable solutions while continuously adapting to new technologies.
+                </div>
+            {% endif %}
+        </div>
+        <div class="about-image">
+            <div class="image-container">
+                <div class="main-image">
+                    {% if about.about_img_url %}
+                        <img src="{{ about.about_img_url }}" alt="{{ about.about_img_url|default:'Profile' }}" class="about-profile-image">
+                    {% else %}
+                        <div class="image-placeholder">
+                            <i class="fas fa-user-tie"></i>
+                            <span>Professional Portfolio</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="accent-box"></div>
+                <div class="accent-box-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-section">
+        <h3>Education</h3>
+        <div class="timeline">
+            {% for edu in education %}
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <div class="timeline-title">{{ edu.degree|linebreaksbr }}</div>
+                    <div class="timeline-period">{{ edu.year_start }} - {{ edu.year_end|default:"Present" }}</div>
+                </div>
+                <div class="timeline-subtitle">{{ edu.institution|linebreaksbr }}</div>
+                {% if edu.description %}
+                <div class="timeline-description emergency-text-wrap {% if edu.description|length > 500 %}scrollable-content{% endif %}">
+                    {{ edu.description|linebreaksbr }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                No education information available.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="timeline-section">
+        <h3>Work Experience</h3>
+        <div class="timeline">
+            {% for exp in work_experience %}
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <div class="timeline-title">{{ exp.job_title|linebreaksbr }}</div>
+                    <div class="timeline-period">{{ exp.year_start }} - {{ exp.year_end|default:"Present" }}</div>
+                </div>
+                <div class="timeline-subtitle">{{ exp.company|linebreaksbr }}</div>
+                {% if exp.description %}
+                <div class="timeline-description emergency-text-wrap {% if exp.description|length > 500 %}scrollable-content{%endif %}">
+                    {{ exp.description|linebreaksbr }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                No work experience information available.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

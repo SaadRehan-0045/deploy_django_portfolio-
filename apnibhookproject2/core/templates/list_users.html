@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Users</title>
+</head>
+<body>
+    <h1>All Users</h1>
+    <a href="/users/create/">Create New User</a>
+    <br><br>
+    
+    {% if users %}
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Actions</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.age }}</td>
+                <td>
+                    <a href="/users/{{ user.id }}/">View</a>
+                    <a href="/users/{{ user.id }}/edit/">Edit</a>
+                    <a href="/users/{{ user.id }}/delete/">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No users found.</p>
+    {% endif %}
+</body>
+</html>

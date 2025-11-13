@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+</head>
+<body>
+    <h1>User Details</h1>
+    
+    {% if user %}
+        <p><strong>ID:</strong> {{ user.id }}</p>
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Age:</strong> {{ user.age }}</p>
+        
+        <br>
+        <a href="/users/{{ user.id }}/edit/">Edit User</a> |
+        <a href="/users/{{ user.id }}/delete/" 
+           onclick="return confirm('Are you sure you want to delete this user?')">Delete User</a> |
+        <a href="/users/">Back to User List</a>
+    {% else %}
+        <p>User not found.</p>
+    {% endif %}
+</body>
+</html>

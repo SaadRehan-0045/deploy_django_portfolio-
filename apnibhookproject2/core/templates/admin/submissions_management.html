@@ -1,0 +1,1297 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Submissions Management - Admin{% endblock %}
+
+{% block page_title %}Contact Form Submissions{% endblock %}
+{% block page_subtitle %}Manage and review contact form submissions from your portfolio{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Submissions Management Specific Styles */
+    .back-navigation {
+        margin-bottom: 2rem;
+    }
+
+    .back-btn {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: transparent;
+        color: var(--text-color);
+        border: 2px solid var(--overlay-color);
+        min-height: 44px;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .back-btn:hover {
+        background: var(--overlay-color);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .card-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--overlay-color);
+    }
+
+    .card-header h2 {
+        font-size: 1.6rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        line-height: 1.3;
+    }
+
+    .card-header p {
+        color: var(--text-color);
+        opacity: 0.8;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .header-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    /* Submissions List Styles */
+    .submissions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .submission-item {
+        background: var(--secondary-bg);
+        border: 2px solid var(--overlay-color);
+        border-radius: 12px;
+        padding: 1.2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .submission-item:hover {
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    .submission-item.unread {
+        background: rgba(147, 112, 219, 0.05);
+        border-left: 4px solid var(--accent-color);
+    }
+
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .submission-meta {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .submission-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        line-height: 1.3;
+        word-break: keep-all;
+        overflow-wrap: normal;
+        hyphens: none;
+        white-space: normal;
+    }
+
+    .unread-indicator {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-color);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+        flex-shrink: 0;
+        margin-right: 0.5rem;
+    }
+
+    .submission-email {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-color);
+        opacity: 0.8;
+        margin-bottom: 0.8rem;
+        font-size: 0.9rem;
+        line-height: 1.3;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        hyphens: none;
+    }
+
+    .submission-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-size: 0.85rem;
+        line-height: 1.3;
+        word-break: break-word;
+        margin-bottom: 0.8rem;
+    }
+
+    .submission-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+        margin-top: 0.5rem;
+    }
+
+    .status-unread {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .status-read {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+
+    .submission-message {
+        color: var(--text-color);
+        opacity: 0.8;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--overlay-color);
+        border-radius: 8px;
+        border-left: 4px solid var(--accent-color);
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: 0.9rem;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+
+    .submission-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .action-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        flex: 1;
+        justify-content: center;
+        min-width: 100px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .btn-view {
+        background: transparent;
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .btn-view:hover {
+        background: var(--accent-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: transparent;
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+
+    .btn-delete:hover {
+        background: #ff6b6b;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-size: 1.2rem;
+    }
+
+    .empty-state p {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        display: none;
+    }
+
+    .modal-content {
+        background: var(--card-bg);
+        margin: 5% auto;
+        padding: 1.5rem;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        border: 2px solid var(--overlay-color);
+        box-shadow: 0 20px 60px var(--shadow-color);
+        position: relative;
+    }
+
+    .close {
+        color: var(--text-color);
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+        line-height: 1;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close:hover {
+        color: var(--accent-color);
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    .modal-header {
+        margin-bottom: 1.5rem;
+        padding-right: 2rem;
+    }
+
+    .modal-header h3 {
+        font-size: 1.3rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: var(--overlay-color);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .detail-row:hover {
+        transform: translateX(5px);
+    }
+
+    .detail-row i {
+        color: var(--accent-color);
+        font-size: 1.1rem;
+        margin-top: 0.1rem;
+        flex-shrink: 0;
+    }
+
+    .detail-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 0.2rem;
+        opacity: 0.8;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .detail-value {
+        font-size: 1rem;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .message-section {
+        margin-top: 1.5rem;
+    }
+
+    .message-section h4 {
+        color: var(--accent-color);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .message-content {
+        background: var(--overlay-color);
+        padding: 1.2rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--accent-color);
+        white-space: pre-wrap;
+        line-height: 1.6;
+        color: var(--text-color);
+        font-size: 0.9rem;
+        word-break: break-word;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--overlay-color);
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+
+    /* Notification */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.2rem;
+        background: var(--card-bg);
+        color: var(--text-color);
+        border-radius: 8px;
+        border: 2px solid var(--overlay-color);
+        box-shadow: 0 8px 25px var(--shadow-color);
+        z-index: 1001;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        border-left: 4px solid var(--accent-color);
+        font-size: 0.9rem;
+    }
+
+    /* Button styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        font-size: 0.9rem;
+        min-height: 44px;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background: var(--accent-gradient);
+        color: white;
+        border-color: var(--accent-color);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--text-color);
+        border-color: var(--overlay-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--overlay-color);
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+    }
+
+    /* Loading animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    /* ============================================
+       RESPONSIVE DESIGN WITH MEDIA QUERIES
+       ============================================ */
+
+    /* Mobile Devices (<= 600px) */
+    @media (max-width: 600px) {
+        .card-header h2 {
+            font-size: 1.4rem;
+        }
+        
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        
+        .header-actions {
+            width: 100%;
+            justify-content: stretch;
+        }
+        
+        .header-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .submission-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .submission-meta {
+            width: 100%;
+            order: 1;
+        }
+
+        .submission-actions {
+            width: 100%;
+            order: 2;
+            justify-content: stretch;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+            font-size: 0.9rem;
+        }
+
+        .submission-name {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .submission-email {
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .submission-date {
+            font-size: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .status-badge {
+            margin-top: 0.3rem;
+        }
+        
+        .modal-content {
+            margin: 10% auto;
+            padding: 1rem;
+        }
+        
+        .modal-actions {
+            flex-direction: column;
+        }
+        
+        .detail-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .detail-row i {
+            align-self: flex-start;
+        }
+    }
+
+    /* Small Mobile Devices (<= 480px) */
+    @media (max-width: 480px) {
+        .submission-item {
+            padding: 1rem;
+        }
+
+        .submission-actions {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 100%;
+            min-width: auto;
+            justify-content: center;
+        }
+
+        .submission-name {
+            font-size: 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.3rem;
+        }
+
+        .unread-indicator {
+            margin-right: 0;
+            align-self: flex-start;
+            margin-top: 0.3rem;
+        }
+
+        .submission-email {
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-date {
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            margin-top: 0.2rem;
+        }
+        
+        .modal-content {
+            padding: 1rem;
+            margin: 10% auto;
+            width: 95%;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+        }
+        
+        .back-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Tablets (<= 768px) */
+    @media (min-width: 601px) and (max-width: 768px) {
+        .submission-header {
+            flex-direction: row;
+            align-items: flex-start;
+        }
+
+        .submission-meta {
+            width: auto;
+            flex: 1;
+        }
+
+        .submission-actions {
+            width: auto;
+            flex-shrink: 0;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            flex: 0 1 auto;
+            min-width: 120px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .submission-item {
+            padding: 1.3rem;
+        }
+        
+        .submission-name {
+            font-size: 1.1rem;
+        }
+        
+        .modal-content {
+            margin: 8% auto;
+            padding: 1.5rem;
+        }
+        
+        .header-content {
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .header-actions {
+            width: auto;
+        }
+    }
+
+    /* Laptops (<= 992px) */
+    @media (min-width: 769px) and (max-width: 992px) {
+        .card-header h2 {
+            font-size: 1.7rem;
+        }
+        
+        .submission-item {
+            padding: 1.4rem;
+        }
+        
+        .submission-name {
+            font-size: 1.15rem;
+        }
+        
+        .submission-email {
+            margin-bottom: 0.8rem;
+        }
+        
+        .submission-date {
+            margin-bottom: 0.8rem;
+        }
+        
+        .status-badge {
+            margin-top: 0.4rem;
+        }
+        
+        .modal-content {
+            margin: 7% auto;
+            padding: 1.8rem;
+        }
+        
+        .submission-actions {
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            min-width: 110px;
+        }
+    }
+
+    /* Large Screens (<= 1200px) */
+    @media (min-width: 993px) and (max-width: 1200px) {
+        .card-header h2 {
+            font-size: 1.8rem;
+        }
+        
+        .submission-header {
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        
+        .submission-actions {
+            width: auto;
+            flex-shrink: 0;
+            justify-content: flex-end;
+        }
+        
+        .action-btn {
+            flex: 0 1 auto;
+            min-width: 120px;
+        }
+
+        .submission-email {
+            margin-bottom: 0.8rem;
+        }
+        
+        .submission-date {
+            margin-bottom: 0.8rem;
+        }
+        
+        .status-badge {
+            margin-top: 0.5rem;
+        }
+
+        .modal-content {
+            padding: 2rem;
+            margin: 5% auto;
+        }
+        
+        .submissions-list {
+            gap: 1.2rem;
+        }
+    }
+
+    /* Extra Large Screens (> 1200px) */
+    @media (min-width: 1201px) {
+        .card-header h2 {
+            font-size: 2rem;
+        }
+        
+        .submission-item {
+            padding: 1.5rem;
+        }
+        
+        .submission-name {
+            font-size: 1.2rem;
+        }
+        
+        .submission-email, .submission-date {
+            font-size: 1rem;
+        }
+        
+        .modal-content {
+            max-width: 700px;
+        }
+        
+        .submissions-list {
+            gap: 1.5rem;
+        }
+    }
+
+    /* Samsung A26 Specific Optimizations */
+    @media (max-width: 412px) and (min-height: 869px) {
+        .card-header h2 {
+            font-size: 1.4rem;
+        }
+        
+        .submission-item {
+            padding: 1rem;
+        }
+        
+        .submission-name {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        
+        .submission-actions {
+            flex-direction: row;
+            gap: 0.8rem;
+        }
+        
+        .action-btn {
+            min-width: 100px;
+            font-size: 0.85rem;
+            padding: 0.8rem 0.8rem;
+        }
+        
+        .submission-email {
+            margin-bottom: 0.6rem;
+        }
+        
+        .submission-date {
+            margin-bottom: 0.6rem;
+        }
+        
+        .status-badge {
+            margin-top: 0.3rem;
+        }
+        
+        .modal-content {
+            margin: 10% auto;
+            padding: 1.2rem;
+        }
+    }
+
+    /* Small Mobile Devices (<= 360px) */
+    @media (max-width: 360px) {
+        .submission-item {
+            padding: 0.8rem;
+        }
+        
+        .submission-name {
+            font-size: 0.95rem;
+        }
+        
+        .action-btn {
+            padding: 0.7rem 0.8rem;
+            font-size: 0.8rem;
+            min-height: 42px;
+        }
+        
+        .submission-actions {
+            gap: 0.5rem;
+        }
+
+        .submission-email {
+            margin-bottom: 0.5rem;
+        }
+
+        .submission-date {
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            margin-top: 0.2rem;
+        }
+
+        .back-btn {
+            padding: 0.7rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .modal-content {
+            padding: 0.8rem;
+        }
+    }
+
+    /* Touch optimization for mobile */
+    @media (hover: none) {
+        .back-btn:hover,
+        .submission-item:hover,
+        .action-btn:hover,
+        .close:hover,
+        .detail-row:hover,
+        .btn:hover {
+            transform: none;
+        }
+        
+        .back-btn:active,
+        .submission-item:active,
+        .action-btn:active,
+        .close:active,
+        .detail-row:active,
+        .btn:active {
+            transform: scale(0.98);
+        }
+    }
+
+    /* Improve touch targets */
+    @media (max-width: 768px) {
+        .submission-item {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .action-btn {
+            min-height: 48px;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Text Responsiveness */
+    @media (max-width: 600px) {
+        .card-header p {
+            font-size: 0.85rem;
+        }
+        
+        .submission-message {
+            font-size: 0.85rem;
+        }
+        
+        .modal-header h3 {
+            font-size: 1.2rem;
+        }
+        
+        .detail-value {
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (min-width: 601px) and (max-width: 768px) {
+        .card-header p {
+            font-size: 0.9rem;
+        }
+        
+        .submission-message {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .card-header p {
+            font-size: 0.95rem;
+        }
+        
+        .submission-message {
+            font-size: 0.95rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back Navigation -->
+<div class="back-navigation">
+    <a href="{% url 'admin_dashboard' %}" class="back-btn">
+        <i class="ri-arrow-left-line"></i>
+        Back to Dashboard
+    </a>
+</div>
+
+<div class="content-card">
+    <div class="card-header">
+        <div class="header-content">
+            <div class="header-info">
+                <h2>
+                    <i class="ri-message-2-line"></i>
+                    Contact Submissions
+                </h2>
+                <p>
+                    Total: {{ contact_submissions|length }} submission{{ contact_submissions|length|pluralize }}
+                    {% with unread_count=contact_submissions|length|default:0 %}
+                        {% if unread_count > 0 %}
+                            • <span style="color: var(--accent-color);">{{ unread_count }} unread</span>
+                        {% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+            <div class="header-actions">
+                {% if contact_submissions %}
+                <button class="btn btn-outline" onclick="markAllAsRead()">
+                    <i class="ri-check-double-line"></i>
+                    Mark All Read
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if contact_submissions %}
+    <div class="submissions-list">
+        {% for submission in contact_submissions %}
+        <div class="submission-item {% if not submission.is_read %}unread{% endif %}" 
+             onclick="viewSubmission('{{ submission.id }}', '{{ submission.name|escapejs }}', '{{ submission.email|escapejs }}', `{{ submission.message|escapejs }}`, '{{ submission.created_at|date:"M d, Y H:i" }}')">
+            <div class="submission-header">
+                <div class="submission-meta">
+                    <div class="submission-name">
+                        {% if not submission.is_read %}
+                        <div class="unread-indicator"></div>
+                        {% endif %}
+                        {{ submission.name }}
+                    </div>
+                    <div class="submission-email">
+                        <i class="ri-mail-line"></i>
+                        {{ submission.email }}
+                    </div>
+                    <div class="submission-date">
+                        <i class="ri-time-line"></i>
+                        {{ submission.created_at|date:"M d, Y H:i" }}
+                    </div>
+                    <div class="submission-status">
+                        {% if submission.is_read %}
+                            <span class="status-badge status-read">
+                                <i class="ri-check-line"></i>
+                                Read
+                            </span>
+                        {% else %}
+                            <span class="status-badge status-unread">
+                                <i class="ri-time-line"></i>
+                                New
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="submission-actions">
+                    <button class="action-btn btn-view" onclick="event.stopPropagation(); viewSubmission('{{ submission.id }}', '{{ submission.name|escapejs }}', '{{ submission.email|escapejs }}', `{{ submission.message|escapejs }}`, '{{ submission.created_at|date:"M d, Y H:i" }}')">
+                        <i class="ri-eye-line"></i>
+                        View
+                    </button>
+                    <a href="{% url 'delete_submission' submission.id %}" 
+                       class="action-btn btn-delete" 
+                       onclick="event.stopPropagation(); return confirm('Are you sure you want to delete this submission?')">
+                        <i class="ri-delete-bin-line"></i>
+                        Delete
+                    </a>
+                </div>
+            </div>
+            <div class="submission-message" title="{{ submission.message }}">
+                {{ submission.message|truncatewords:30 }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="ri-inbox-line"></i>
+        <h3>No Submissions Yet</h3>
+        <p>Contact form submissions will appear here when users fill out the contact form on your portfolio.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- View Submission Modal -->
+<div id="submissionModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        
+        <div class="modal-header">
+            <h3>
+                <i class="ri-message-2-line"></i>
+                Contact Form Submission
+            </h3>
+        </div>
+        
+        <div class="submission-details">
+            <div class="detail-row">
+                <i class="ri-user-line"></i>
+                <div class="detail-content">
+                    <span class="detail-label">Name</span>
+                    <span id="modal-name" class="detail-value"></span>
+                </div>
+            </div>
+            
+            <div class="detail-row">
+                <i class="ri-mail-line"></i>
+                <div class="detail-content">
+                    <span class="detail-label">Email</span>
+                    <span id="modal-email" class="detail-value"></span>
+                </div>
+            </div>
+            
+            <div class="detail-row">
+                <i class="ri-time-line"></i>
+                <div class="detail-content">
+                    <span class="detail-label">Date Submitted</span>
+                    <span id="modal-date" class="detail-value"></span>
+                </div>
+            </div>
+            
+            <div class="message-section">
+                <h4>
+                    <i class="ri-chat-quote-line"></i>
+                    Message
+                </h4>
+                <div class="message-content" id="modal-message"></div>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="closeModal()">
+                <i class="ri-close-line"></i>
+                Close
+            </button>
+            <a href="#" id="reply-link" class="btn btn-primary">
+                <i class="ri-reply-line"></i>
+                Reply via Email
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewSubmission(id, name, email, message, date) {
+    document.getElementById('modal-name').textContent = name;
+    document.getElementById('modal-email').textContent = email;
+    document.getElementById('modal-message').textContent = message;
+    document.getElementById('modal-date').textContent = date;
+    
+    // Set reply link
+    const replyLink = document.getElementById('reply-link');
+    replyLink.href = `mailto:${email}?subject=Re: Your contact form submission&body=Dear ${encodeURIComponent(name)},%0D%0A%0D%0AThank you for reaching out through my portfolio contact form.`;
+    
+    document.getElementById('submissionModal').style.display = 'block';
+    
+    // Mark as read (you would typically make an AJAX call here)
+    const item = document.querySelector(`.submission-item[onclick*="${id}"]`);
+    if (item && item.classList.contains('unread')) {
+        item.classList.remove('unread');
+        const statusBadge = item.querySelector('.status-badge');
+        if (statusBadge) {
+            statusBadge.className = 'status-badge status-read';
+            statusBadge.innerHTML = '<i class="ri-check-line"></i> Read';
+        }
+        const indicator = item.querySelector('.unread-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+        
+        // Update unread count in header
+        updateUnreadCount();
+    }
+}
+
+function closeModal() {
+    document.getElementById('submissionModal').style.display = 'none';
+}
+
+function markAllAsRead() {
+    const unreadItems = document.querySelectorAll('.submission-item.unread');
+    unreadItems.forEach(item => {
+        item.classList.remove('unread');
+        const statusBadge = item.querySelector('.status-badge');
+        if (statusBadge) {
+            statusBadge.className = 'status-badge status-read';
+            statusBadge.innerHTML = '<i class="ri-check-line"></i> Read';
+        }
+        const indicator = item.querySelector('.unread-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    });
+    
+    // Update unread count
+    updateUnreadCount();
+    
+    // Show confirmation
+    showNotification('All submissions marked as read', 'success');
+}
+
+function updateUnreadCount() {
+    const unreadCount = document.querySelectorAll('.submission-item.unread').length;
+    const countElement = document.querySelector('.card-header p span');
+    if (countElement) {
+        if (unreadCount > 0) {
+            countElement.textContent = ` • ${unreadCount} unread`;
+            countElement.style.color = 'var(--accent-color)';
+        } else {
+            countElement.textContent = '';
+        }
+    }
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    
+    if (type === 'success') {
+        notification.style.borderLeftColor = '#28a745';
+    } else if (type === 'error') {
+        notification.style.borderLeftColor = '#dc3545';
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const closeBtn = document.querySelector('.close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('submissionModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Add keyboard support
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Fix for mobile text selection
+    document.querySelectorAll('.submission-item, .action-btn').forEach(element => {
+        element.style.webkitTapHighlightColor = 'transparent';
+        element.style.webkitUserSelect = 'none';
+        element.style.userSelect = 'none';
+    });
+});
+
+// Add CSS for loading animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}
