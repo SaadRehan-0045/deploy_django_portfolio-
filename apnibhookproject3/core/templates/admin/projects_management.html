@@ -1,0 +1,1243 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Projects Management - Admin{% endblock %}
+
+{% block page_title %}Projects Management{% endblock %}
+{% block page_subtitle %}Showcase your work and portfolio projects{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Projects Management Specific Styles */
+    .back-navigation {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .back-btn {
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: transparent;
+        color: var(--text-color);
+        border: 2px solid var(--overlay-color);
+        min-height: 44px;
+    }
+
+    .back-btn:hover {
+        background: var(--overlay-color);
+        border-color: var(--accent-color);
+        color: var(--text-color);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .card-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--overlay-color);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-header h2 {
+        font-size: 1.8rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-header p {
+        color: var(--text-color);
+        opacity: 0.8;
+        font-size: 0.95rem;
+    }
+
+    .project-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-title {
+        color: var(--accent-color);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--overlay-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.3rem;
+    }
+
+    /* Flexbox Form Layout */
+    .form-flex {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0;
+        flex: 1;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        border: 2px solid var(--overlay-color);
+        background: var(--secondary-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        min-height: 44px;
+        flex: 1;
+    }
+
+    .form-textarea {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 2px solid var(--overlay-color);
+        background: var(--secondary-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        resize: vertical;
+        min-height: 120px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        flex: 1;
+    }
+
+    /* File Input Styles */
+    .file-input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        border: 2px solid var(--overlay-color);
+        background: var(--secondary-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-height: 44px;
+    }
+
+    .file-input:hover {
+        border-color: var(--accent-color);
+    }
+
+    .file-input-info {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .current-image-section {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: var(--overlay-color);
+        border-radius: 8px;
+        border-left: 4px solid var(--accent-color);
+    }
+
+    .current-image-label {
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: var(--text-color);
+    }
+
+    .current-image-preview {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .current-image-preview img {
+        max-width: 150px;
+        max-height: 150px;
+        border-radius: 8px;
+        border: 2px solid var(--overlay-color);
+        object-fit: contain;
+    }
+
+    .no-image {
+        color: var(--text-color);
+        opacity: 0.7;
+        font-style: italic;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .file-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px var(--shadow-color);
+        transform: translateY(-2px);
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    /* Edit Form Styles */
+    .edit-form-container {
+        display: none;
+        margin-top: 2rem;
+    }
+
+    .edit-form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--overlay-color);
+    }
+
+    /* Projects List Styles - Simplified */
+    .projects-flex {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .project-item {
+        background: var(--secondary-bg);
+        border: 2px solid var(--overlay-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .project-item:hover {
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    .project-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .project-main-info {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .project-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .project-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        line-height: 1.3;
+        word-wrap: break-word;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    /* Action Buttons - Simplified */
+    .project-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .action-btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        min-width: 100px;
+        justify-content: center;
+    }
+
+    .btn-edit {
+        background: transparent;
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .btn-edit:hover {
+        background: var(--accent-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        background: transparent;
+        color: #ff6b6b;
+        border-color: #ff6b6b;
+    }
+
+    .btn-delete:hover {
+        background: #ff6b6b;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-size: 1.3rem;
+    }
+
+    /* Button Styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 1rem;
+        border: none;
+        min-height: 44px;
+    }
+
+    .btn-primary {
+        background: var(--accent-gradient);
+        color: white;
+        box-shadow: 0 3px 12px var(--shadow-color);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--text-color);
+        border: 2px solid var(--overlay-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--overlay-color);
+        border-color: var(--accent-color);
+    }
+
+    /* ========== RESPONSIVE MEDIA QUERIES ========== */
+
+    /* Mobile: <= 600px (Default styles are mobile first) */
+
+    /* Tablets: 601px - 768px */
+    @media (min-width: 601px) {
+        .card-header h2 {
+            font-size: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+        }
+        
+        .form-row {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(50% - 0.75rem);
+            min-width: 250px;
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 1rem 1.2rem;
+            font-size: 1.05rem;
+        }
+        
+        .project-header {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .project-title-row {
+            margin-bottom: 0;
+            justify-content: flex-start;
+            flex: 1;
+        }
+        
+        .project-actions {
+            justify-content: flex-end;
+            min-width: 200px;
+        }
+    }
+
+    /* Laptops: 769px - 992px */
+    @media (min-width: 769px) {
+        .card-header h2 {
+            font-size: 2.1rem;
+        }
+        
+        .section-title {
+            font-size: 1.45rem;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(50% - 1rem);
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 1.1rem 1.3rem;
+        }
+        
+        .form-hint {
+            font-size: 0.9rem;
+        }
+        
+        .project-title {
+            font-size: 1.4rem;
+        }
+        
+        .action-btn {
+            min-width: 110px;
+            padding: 0.8rem 1.4rem;
+        }
+    }
+
+    /* Large Screens: 993px - 1200px */
+    @media (min-width: 993px) {
+        .card-header h2 {
+            font-size: 2.2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(33.333% - 1rem);
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 1.2rem 1.4rem;
+            font-size: 1.1rem;
+        }
+        
+        .form-group label {
+            font-size: 1rem;
+        }
+        
+        .project-title {
+            font-size: 1.5rem;
+        }
+        
+        .action-btn {
+            min-width: 120px;
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Extra Large Screens: 1201px and above */
+    @media (min-width: 1201px) {
+        .card-header h2 {
+            font-size: 2.3rem;
+        }
+        
+        .section-title {
+            font-size: 1.6rem;
+        }
+        
+        .form-group {
+            flex: 1 1 calc(25% - 1.125rem);
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 1.3rem 1.5rem;
+        }
+        
+        .form-group label {
+            font-size: 1.05rem;
+        }
+        
+        .form-hint {
+            font-size: 0.95rem;
+        }
+        
+        .project-title {
+            font-size: 1.6rem;
+        }
+        
+        .action-btn {
+            min-width: 130px;
+            padding: 0.9rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* Samsung A26 Specific Optimizations */
+    @media (max-width: 412px) and (min-height: 869px) {
+        .card-header h2 {
+            font-size: 1.6rem;
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 0.7rem 0.9rem;
+            font-size: 0.95rem;
+        }
+        
+        .project-item {
+            padding: 1.2rem;
+        }
+        
+        .project-title {
+            font-size: 1.2rem;
+        }
+        
+        .project-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .action-btn {
+            width: 100%;
+            min-width: auto;
+        }
+        
+        .form-actions {
+            justify-content: center;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .edit-form-actions {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .edit-form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .current-image-preview {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .current-image-preview img {
+            max-width: 120px;
+            max-height: 120px;
+        }
+    }
+
+    /* Small Mobile Devices (below 400px) */
+    @media (max-width: 400px) {
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .project-item {
+            padding: 1rem;
+        }
+        
+        .project-title {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            min-width: 150px;
+        }
+        
+        .action-btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+            min-height: 42px;
+            min-width: 90px;
+        }
+        
+        .form-group label {
+            font-size: 0.9rem;
+        }
+        
+        .form-hint {
+            font-size: 0.8rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Very Small Mobile (below 320px) */
+    @media (max-width: 320px) {
+        .card-header h2 {
+            font-size: 1.4rem;
+        }
+        
+        .form-input,
+        .form-textarea,
+        .file-input {
+            padding: 0.5rem 0.7rem;
+            font-size: 0.85rem;
+        }
+        
+        .project-item {
+            padding: 0.8rem;
+        }
+        
+        .project-title {
+            font-size: 1rem;
+            min-width: 120px;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+            min-height: 40px;
+            min-width: 80px;
+        }
+        
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+            min-height: 40px;
+        }
+        
+        .back-btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Touch optimization for mobile */
+    @media (hover: none) {
+        .back-btn:hover,
+        .project-item:hover,
+        .form-input:hover,
+        .form-textarea:hover,
+        .file-input:hover,
+        .action-btn:hover {
+            transform: none;
+        }
+        
+        .back-btn:active,
+        .project-item:active,
+        .form-input:active,
+        .form-textarea:active,
+        .file-input:active,
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .form-input:focus,
+        .form-textarea:focus,
+        .file-input:focus {
+            transform: none;
+        }
+    }
+
+    /* Enhanced focus states for accessibility */
+    .form-input:focus-visible,
+    .form-textarea:focus-visible,
+    .file-input:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
+    }
+
+    /* Loading animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+        }
+        
+        .animate-spin {
+            animation: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back Navigation -->
+<div class="back-navigation">
+    <a href="{% url 'admin_dashboard' %}" class="back-btn">
+        <i class="ri-arrow-left-line"></i>
+        Back to Dashboard
+    </a>
+</div>
+
+<!-- Add New Project Card -->
+<div class="content-card">
+    <div class="card-header">
+        <h2>
+            <i class="ri-add-circle-line"></i>
+            Add New Project
+        </h2>
+        <p>Add a new project to showcase in your portfolio</p>
+    </div>
+
+    <form method="post" action="{% url 'add_project' %}" class="project-form" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="ri-information-line"></i>
+                Required Information
+            </h3>
+            
+            <div class="form-flex">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Title: *</label>
+                        <input type="text" 
+                               name="title" 
+                               placeholder="Enter project title (keep it concise)" 
+                               required 
+                               class="form-input">
+                        <span class="form-hint">Keep title concise for better display</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Upload Project Image:</label>
+                        <div class="file-input-wrapper">
+                            <input 
+                                type="file" 
+                                name="project_img_file" 
+                                accept="image/*"
+                                class="file-input"
+                            />
+                            <div class="file-input-info">
+                                <i class="ri-information-line"></i>
+                                Supported formats: JPG, PNG, WebP, GIF. Max file size: 5MB
+                            </div>
+                        </div>
+                        
+                        <!-- Or use URL field -->
+                        <div style="margin-top: 1rem;">
+                            <label>Or enter image URL:</label>
+                            <input type="url" 
+                                   name="image_url" 
+                                   placeholder="https://example.com/image.jpg" 
+                                   class="form-input">
+                        </div>
+                        
+                        <span class="form-hint">
+                            Upload a project image or provide a URL. Uploaded images will override the URL field.
+                            Recommended size: 800x600px or larger for best quality.
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Full Description: *</label>
+                    <textarea name="full_description" 
+                              rows="4" 
+                              placeholder="Detailed project description..." 
+                              required 
+                              class="form-textarea"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Technologies (comma separated): *</label>
+                    <input type="text" 
+                           name="technologies" 
+                           placeholder="React, Django, PostgreSQL, etc." 
+                           required 
+                           class="form-input">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="ri-external-link-line"></i>
+                Optional Links
+            </h3>
+            
+            <div class="form-flex">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website URL:</label>
+                        <input type="url" 
+                               name="project_url" 
+                               placeholder="https://example.com" 
+                               class="form-input">
+                        <span class="form-hint">Optional - add if available</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>GitHub URL:</label>
+                        <input type="url" 
+                               name="github_url" 
+                               placeholder="https://github.com/username/repo" 
+                               class="form-input">
+                        <span class="form-hint">Optional - add if available</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Video URL:</label>
+                        <input type="url" 
+                               name="video_url" 
+                               placeholder="https://youtube.com/watch?v=..." 
+                               class="form-input">
+                        <span class="form-hint">Optional - add if available</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="ri-add-line"></i>
+                Add Project
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Edit Project Card (Hidden by default) -->
+<div id="edit-project-form" class="content-card edit-form-container">
+    <div class="card-header">
+        <h2>
+            <i class="ri-edit-box-line"></i>
+            Edit Project
+        </h2>
+        <p>Update project details and links</p>
+    </div>
+
+    <form method="post" action="" id="edit-project-form-action" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="project_id" id="edit-project-id">
+        
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="ri-information-line"></i>
+                Required Information
+            </h3>
+            
+            <div class="form-flex">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Title: *</label>
+                        <input type="text" 
+                               name="title" 
+                               id="edit-project-title" 
+                               required 
+                               class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Upload Project Image:</label>
+                        <div class="file-input-wrapper">
+                            <input 
+                                type="file" 
+                                name="project_img_file" 
+                                accept="image/*"
+                                class="file-input"
+                            />
+                            <div class="file-input-info">
+                                <i class="ri-information-line"></i>
+                                Supported formats: JPG, PNG, WebP, GIF. Max file size: 5MB
+                            </div>
+                        </div>
+                        
+                        <!-- Current Image Display -->
+                        <div id="edit-project-current-image" class="current-image-section" style="display: none;">
+                            <div class="current-image-label">Current Project Image:</div>
+                            <div class="current-image-preview">
+                                <img id="edit-project-current-image-preview" src="" alt="Current Project Image" />
+                                <div>
+                                    <strong>Image URL:</strong><br>
+                                    <small id="edit-project-current-image-url" style="word-break: break-all;"></small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Or use URL field -->
+                        <div style="margin-top: 1rem;">
+                            <label>Or enter image URL:</label>
+                            <input type="url" 
+                                   name="image_url" 
+                                   id="edit-project-image" 
+                                   class="form-input">
+                        </div>
+                        
+                        <span class="form-hint">
+                            Upload a new image or update the URL. Uploaded images will override the URL field.
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Full Description: *</label>
+                    <textarea name="full_description" 
+                              id="edit-project-full-description" 
+                              rows="4" 
+                              required 
+                              class="form-textarea"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Technologies (comma separated): *</label>
+                    <input type="text" 
+                           name="technologies" 
+                           id="edit-project-technologies" 
+                           required 
+                           class="form-input">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="ri-external-link-line"></i>
+                Optional Links
+            </h3>
+            
+            <div class="form-flex">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website URL:</label>
+                        <input type="text" 
+                               name="project_url" 
+                               id="edit-project-url" 
+                               placeholder="https://example.com" 
+                               class="form-input">
+                        <span class="form-hint">Leave empty if you want to remove this link</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>GitHub URL:</label>
+                        <input type="text" 
+                               name="github_url" 
+                               id="edit-project-github" 
+                               placeholder="https://github.com/username/repo" 
+                               class="form-input">
+                        <span class="form-hint">Leave empty if you want to remove this link</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Video URL:</label>
+                        <input type="text" 
+                               name="video_url" 
+                               id="edit-project-video" 
+                               placeholder="https://youtube.com/watch?v=..." 
+                               class="form-input">
+                        <span class="form-hint">Leave empty if you want to remove this link</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="edit-form-actions">
+            <button type="button" class="btn btn-outline" onclick="hideEditProjectForm()">
+                <i class="ri-close-line"></i>
+                Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="ri-save-line"></i>
+                Update Project
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Existing Projects Card - Simplified -->
+<div class="content-card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2>
+            <i class="ri-projector-line"></i>
+            Existing Projects ({{ projects|length }})
+        </h2>
+        <p>Manage your portfolio projects - showing titles only with actions</p>
+    </div>
+
+    {% if projects %}
+    <div class="projects-flex">
+        {% for project in projects %}
+        <div class="project-item">
+            <div class="project-header">
+                <div class="project-main-info">
+                    <div class="project-title-row">
+                        <div class="project-title">{{ project.title }}</div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-edit" onclick="showEditProjectForm(
+                                '{{ project.id }}', 
+                                '{{ project.title|escapejs }}', 
+                                `{{ project.full_description|escapejs }}`,
+                                '{{ project.image_url }}',
+                                '{{ project.technologies|join:","|escapejs }}',
+                                '{{ project.project_url|default:"" }}',
+                                '{{ project.github_url|default:"" }}',
+                                '{{ project.video_url|default:"" }}'
+                            )">
+                                <i class="ri-edit-line"></i>
+                                Edit
+                            </button>
+                            <a href="{% url 'delete_project' project.id %}" 
+                               class="action-btn btn-delete" 
+                               onclick="return confirm('Are you sure you want to delete this project?')">
+                                <i class="ri-delete-bin-line"></i>
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="ri-projector-line"></i>
+        <h3>No Projects Yet</h3>
+        <p>Add your first project using the form above.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function showEditProjectForm(projectId, title, fullDescription, imageUrl, technologies, projectUrl, githubUrl, videoUrl) {
+    const editForm = document.getElementById('edit-project-form');
+    editForm.style.display = 'block';
+    
+    document.getElementById('edit-project-id').value = projectId;
+    document.getElementById('edit-project-title').value = title;
+    document.getElementById('edit-project-full-description').value = fullDescription;
+    document.getElementById('edit-project-image').value = imageUrl || '';
+    document.getElementById('edit-project-technologies').value = technologies || '';
+    document.getElementById('edit-project-url').value = projectUrl || '';
+    document.getElementById('edit-project-github').value = githubUrl || '';
+    document.getElementById('edit-project-video').value = videoUrl || '';
+    
+    // Show current image if available
+    const currentImageSection = document.getElementById('edit-project-current-image');
+    const currentImagePreview = document.getElementById('edit-project-current-image-preview');
+    const currentImageUrl = document.getElementById('edit-project-current-image-url');
+    
+    if (imageUrl) {
+        currentImagePreview.src = imageUrl;
+        currentImageUrl.textContent = imageUrl;
+        currentImageSection.style.display = 'block';
+    } else {
+        currentImageSection.style.display = 'none';
+    }
+    
+    const form = document.getElementById('edit-project-form-action');
+    form.action = "{% url 'update_project' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', projectId);
+    
+    // Scroll to edit form
+    editForm.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+    });
+}
+
+function hideEditProjectForm() {
+    document.getElementById('edit-project-form').style.display = 'none';
+}
+
+// Add focus styles to form elements
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('.form-input, .form-textarea, .file-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // File input validation
+    const fileInputs = document.querySelectorAll('input[name="project_img_file"]');
+    fileInputs.forEach(fileInput => {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, WebP, or GIF).');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file size (5MB)
+                const maxSize = 5 * 1024 * 1024;
+                if (file.size > maxSize) {
+                    alert('File size must be less than 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Show file name
+                const fileInfo = this.parentElement.querySelector('.file-input-info');
+                if (fileInfo) {
+                    fileInfo.innerHTML = `<i class="ri-check-line" style="color: var(--success-color);"></i> Selected: ${file.name}`;
+                }
+            }
+        });
+    });
+
+    // Form submission feedback
+    const forms = document.querySelectorAll('.project-form, #edit-project-form-action');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Saving...';
+                submitBtn.disabled = true;
+                
+                // Revert after 5 seconds in case of error
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 5000);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

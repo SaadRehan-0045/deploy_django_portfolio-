@@ -1,0 +1,769 @@
+{% extends 'portfolio/base.html' %}
+{% block extra_css %}
+<style>
+    /* Home Section - Mobile First with Flexbox */
+    .home-container { 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: 90vh;
+        gap: 2rem;
+    }
+    
+    /* Main Content Flex Container */
+    .home-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+    }
+    
+    /* Text Content Section */
+    .home-text {
+        width: 100%;
+        z-index: 2;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* Image Content Section */
+    .home-image {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        order: -1; /* Image comes first on mobile */
+    }
+    
+    /* Buttons Container - Centered on mobile */
+    .home-buttons-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 300px;
+        margin-top: 1rem;
+        align-items: center;
+    }
+    
+    /* Text Elements - Mobile First */
+    .greeting-text {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 400;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+    
+    .user-name {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        line-height: 1.2;
+        color: var(--text-color);
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px var(--shadow-color);
+    }
+    
+    .greeting-text2 {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 400;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+    
+    .profession {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent-color);
+        font-weight: 600;
+        min-height: 2rem;
+        text-shadow: 0 0 10px var(--shadow-color);
+    }
+    
+    .typewriter-text {
+        border-right: 2px solid var(--accent-color);
+        animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+        0%, 100% { border-color: var(--accent-color); }
+        50% { border-color: transparent; }
+    }
+    
+    .description-text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+        max-width: 100%;
+        opacity: 0.8;
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 0.9rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 0.9rem;
+        border: 2px solid transparent;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .cta-btn {
+        background: var(--accent-gradient);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .cta-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+    }
+
+    .secondary-btn {
+        background: transparent;
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+        box-shadow: 0 4px 15px var(--shadow-color);
+        backdrop-filter: blur(10px);
+    }
+
+    .secondary-btn:hover {
+        background: var(--accent-gradient);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    /* FIXED: Enhanced Asymmetric Design - Now shows full image */
+    .asymmetric-container {
+        width: 200px;
+        height: 250px;
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .asymmetric-main {
+        width: 180px;
+        height: 220px;
+        background: var(--card-bg);
+        border-radius: 20px 20px 20px 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-shadow: 0 12px 30px var(--shadow-color);
+        transition: all 0.4s ease;
+        z-index: 2;
+        border: 2px solid var(--overlay-color);
+        backdrop-filter: blur(10px);
+    }
+
+    .asymmetric-accent {
+        width: 160px;
+        height: 200px;
+        background: var(--accent-gradient);
+        border-radius: 0 20px 20px 20px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        opacity: 0.3;
+        transition: all 0.4s ease;
+        z-index: 1;
+    }
+
+    .asymmetric-container:hover .asymmetric-main {
+        transform: translate(-8px, -8px) rotate(-2deg);
+    }
+
+    .asymmetric-container:hover .asymmetric-accent {
+        transform: translate(8px, 8px) rotate(2deg);
+        opacity: 0.5;
+    }
+
+    /* FIXED: Converted to background-image approach */
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        background: var(--overlay-color);
+        background-size:100% 100%; /* CHANGED: from 'cover' to 'contain' */
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .asymmetric-container:hover .profile-image {
+        transform: scale(1.05);
+    }
+
+    .asymmetric-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--card-bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 0.8rem;
+        gap: 0.5rem;
+    }
+
+    .asymmetric-placeholder i {
+        font-size: 2rem;
+        opacity: 0.7;
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .asymmetric-container {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    /* ========== MEDIA QUERIES ========== */
+
+    /* Tablets (601px - 768px) */
+    @media (min-width: 601px) {
+        .home-container {
+            padding: 1.5rem;
+        }
+        
+        .home-content {
+            gap: 2.5rem;
+        }
+        
+        .user-name {
+            font-size: 2.2rem;
+        }
+        
+        .profession {
+            font-size: 1.4rem;
+        }
+        
+        .description-text {
+            font-size: 1rem;
+            max-width: 90%;
+        }
+        
+        .home-buttons-container {
+            max-width: 400px;
+            flex-direction: row;
+        }
+        
+        .btn {
+            width: auto;
+            flex: 1;
+        }
+        
+        .asymmetric-container {
+            width: 240px;
+            height: 300px;
+        }
+        
+        .asymmetric-main {
+            width: 220px;
+            height: 270px;
+        }
+        
+        .asymmetric-accent {
+            width: 200px;
+            height: 250px;
+        }
+    }
+
+    /* Laptops (769px - 992px) */
+    @media (min-width: 769px) {
+        .home-container {
+            padding: 2rem 1.5rem;
+        }
+        
+        .home-content {
+            flex-direction: row;
+            align-items: center;
+            gap: 3rem;
+        }
+        
+        .home-text {
+            text-align: left;
+            flex: 1;
+            align-items: flex-start;
+        }
+        
+        .home-image {
+            flex: 1;
+            justify-content: flex-end;
+            order: 2;
+        }
+        
+        .home-buttons-container {
+            flex-direction: row;
+            max-width: 450px;
+            margin: 2rem 0 0;
+            align-self: flex-start;
+            gap: 1.2rem;
+        }
+        
+        .btn {
+            width: auto;
+            flex: 1;
+            padding: 1rem 1.8rem;
+            font-size: 0.95rem;
+        }
+        
+        .user-name {
+            font-size: 2.8rem;
+        }
+        
+        .profession {
+            font-size: 1.8rem;
+        }
+        
+        .description-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 100%;
+        }
+        
+        .asymmetric-container {
+            width: 280px;
+            height: 350px;
+        }
+        
+        .asymmetric-main {
+            width: 250px;
+            height: 310px;
+        }
+        
+        .asymmetric-accent {
+            width: 230px;
+            height: 290px;
+        }
+        
+        .asymmetric-placeholder {
+            font-size: 0.9rem;
+        }
+        
+        .asymmetric-placeholder i {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Large Screens (993px - 1200px) */
+    @media (min-width: 993px) {
+        .home-container {
+            padding: 3rem 2rem;
+        }
+        
+        .home-content {
+            flex-direction: row;
+            align-items: center;
+            gap: 4rem;
+        }
+        
+        .home-text {
+            text-align: left;
+            flex: 1;
+            align-items: flex-start;
+        }
+        
+        .home-image {
+            flex: 1;
+            justify-content: flex-end;
+            order: 2;
+        }
+        
+        .home-buttons-container {
+            flex-direction: row;
+            max-width: 500px;
+            margin: 2rem 0 0;
+            align-self: flex-start;
+            gap: 1.5rem;
+        }
+        
+        .btn {
+            width: auto;
+            flex: 1;
+            padding: 1.1rem 2rem;
+            font-size: 1rem;
+        }
+        
+        .user-name {
+            font-size: 3.2rem;
+        }
+        
+        .profession {
+            font-size: 2rem;
+        }
+        
+        .description-text {
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+        
+        .asymmetric-container {
+            width: 320px;
+            height: 400px;
+        }
+        
+        .asymmetric-main {
+            width: 280px;
+            height: 350px;
+        }
+        
+        .asymmetric-accent {
+            width: 260px;
+            height: 330px;
+        }
+    }
+
+    /* Extra Large Screens (1201px and above) */
+    @media (min-width: 1201px) {
+        .home-container {
+            padding: 3rem 2rem;
+        }
+        
+        .home-content {
+            flex-direction: row;
+            align-items: center;
+            gap: 5rem;
+        }
+        
+        .home-text {
+            text-align: left;
+            flex: 1;
+            align-items: flex-start;
+        }
+        
+        .home-image {
+            flex: 1;
+            justify-content: flex-end;
+            order: 2;
+        }
+        
+        .home-buttons-container {
+            flex-direction: row;
+            max-width: 550px;
+            margin: 2rem 0 0;
+            align-self: flex-start;
+            gap: 2rem;
+        }
+        
+        .btn {
+            width: auto;
+            flex: 1;
+            padding: 1.2rem 2.2rem;
+            font-size: 1.05rem;
+        }
+        
+        .user-name {
+            font-size: 3.8rem;
+        }
+        
+        .profession {
+            font-size: 2.2rem;
+        }
+        
+        .description-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+        }
+        
+        .asymmetric-container {
+            width: 350px;
+            height: 440px;
+        }
+        
+        .asymmetric-main {
+            width: 310px;
+            height: 390px;
+        }
+        
+        .asymmetric-accent {
+            width: 290px;
+            height: 370px;
+        }
+    }
+
+    /* Small Mobile Optimization (below 400px) */
+    @media (max-width: 400px) {
+        .home-container {
+            padding: 0.8rem;
+            gap: 1.5rem;
+        }
+        
+        .home-content {
+            gap: 1.5rem;
+        }
+        
+        .user-name {
+            font-size: 1.6rem;
+        }
+        
+        .profession {
+            font-size: 1.1rem;
+        }
+        
+        .description-text {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.2rem;
+            font-size: 0.85rem;
+        }
+        
+        .home-buttons-container {
+            max-width: 280px;
+        }
+        
+        .asymmetric-container {
+            width: 180px;
+            height: 220px;
+        }
+        
+        .asymmetric-main {
+            width: 160px;
+            height: 190px;
+        }
+        
+        .asymmetric-accent {
+            width: 140px;
+            height: 170px;
+        }
+        
+        .asymmetric-placeholder {
+            font-size: 0.7rem;
+        }
+        
+        .asymmetric-placeholder i {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) {
+        .asymmetric-container:hover .asymmetric-main,
+        .asymmetric-container:hover .asymmetric-accent,
+        .btn:hover {
+            transform: none;
+        }
+        
+        .asymmetric-container:active .asymmetric-main {
+            transform: translate(-4px, -4px) scale(0.98);
+        }
+        
+        .asymmetric-container:active .asymmetric-accent {
+            transform: translate(4px, 4px) scale(0.98);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+    }
+
+    /* High-resolution screens */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .asymmetric-main {
+            border-width: 1.5px;
+        }
+        
+        .btn {
+            border-width: 1.5px;
+        }
+    }
+
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .asymmetric-container,
+        .btn,
+        .asymmetric-main .profile-image,
+        .asymmetric-main,
+        .asymmetric-accent {
+            animation: none;
+            transition: none;
+        }
+        
+        .typewriter-text {
+            animation: none;
+            border-right: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Home Container -->
+<div class="home-container">
+    <div class="home-content">
+        <!-- Text Content Section -->
+        <div class="home-text">
+            <div class="greeting-text">
+                {{ settings.greeting_text|default:"HELLO, I'M"|linebreaksbr }}
+            </div>
+            
+            <h1 class="user-name">
+                {{ settings.user_display_name|default:"Muhammad Saad Rehan"|linebreaksbr }}
+            </h1>
+
+            <div class="greeting-text2">
+                {{ settings.greeting_text2|default:"AND I'M A"|linebreaksbr }}
+            </div>
+            
+            <h2 class="profession" id="typewriter">
+                {% if settings.profession_text %}
+                    {{ settings.profession_text.0|default:"Game Developer"|linebreaksbr }}
+                {% else %}
+                    Game Developer
+                {% endif %}
+            </h2>
+            
+            <div class="description-text">
+                {{ settings.description_text|default:"I build high-performance applications that deliver exceptional user experiences. Focused on creating end-to-end web and mobile solutions using modern technologies and scalable cloud platforms."|linebreaksbr }}
+            </div>
+        </div>
+        
+        <!-- Image Content Section -->
+        <div class="home-image">
+            <!-- Enhanced Asymmetric Design -->
+            <div class="asymmetric-container">
+                <div class="asymmetric-accent"></div>
+                <div class="asymmetric-main">
+                    {% if settings.profile_image_url %}
+                        <div class="profile-image" style="background-image: url('{{ settings.profile_image_url }}')"></div>
+                    {% else %}
+                        <div class="asymmetric-placeholder">
+                            <i class="fas fa-user-tie"></i>
+                            <span>PROFILE IMAGE</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons Container - Now properly centered on mobile -->
+    <div class="home-buttons-container">
+        <a class="btn cta-btn" href="{% url 'contact' %}" role="button">
+            <i class="fas fa-paper-plane"></i>
+            Hire Me
+        </a>
+        <a class="btn secondary-btn" href="{% url 'projects' %}" role="button">
+            <i class="fas fa-briefcase"></i>
+            View Projects
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Typewriter effect for professions
+    const professions = {% if settings.profession_text %}{{ settings.profession_text|safe }}{% else %}['Game Developer', 'Full-Stack Developer', 'Web Developer']{% endif %};
+    const typewriterElement = document.getElementById('typewriter');
+    
+    if (professions && professions.length > 1) {
+        let professionIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let currentText = '';
+        
+        function typeWriter() {
+            const currentProfession = professions[professionIndex];
+            
+            if (isDeleting) {
+                currentText = currentProfession.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                currentText = currentProfession.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            typewriterElement.innerHTML = currentText + '<span class="typewriter-text"></span>';
+            
+            let typeSpeed = isDeleting ? 50 : 100;
+            
+            if (!isDeleting && charIndex === currentProfession.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                professionIndex = (professionIndex + 1) % professions.length;
+                typeSpeed = 500;
+            }
+            
+            setTimeout(typeWriter, typeSpeed);
+        }
+        
+        typeWriter();
+    }
+
+    // Add scroll effect to navbar
+    window.addEventListener('scroll', function() {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 100) {
+            nav.style.background = document.body.classList.contains('dark-mode') 
+                ? 'rgba(26, 20, 48, 0.95)' 
+                : 'rgba(250, 248, 255, 0.98)';
+        } else {
+            nav.style.background = document.body.classList.contains('dark-mode')
+                ? 'rgba(26, 20, 48, 0.9)'
+                : 'rgba(250, 248, 255, 0.95)';
+        }
+    });
+});
+</script>
+{% endblock %}

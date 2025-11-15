@@ -1,0 +1,1171 @@
+{% extends 'portfolio/base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Contact Section - Mobile First */
+    .page-section {
+        min-height: 100vh;
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    .contact-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    /* Mobile-first layout - Form comes first */
+    .contact-form-section {
+        order: 1;
+    }
+    
+    .contact-info-section {
+        order: 2;
+    }
+    
+    .contact-info-section h3,
+    .contact-form-section h3 {
+        font-size: 1.4rem;
+        color: var(--accent-color);
+        margin-bottom: 1.2rem;
+        text-align: center;
+        text-shadow: 0 0 8px var(--shadow-color);
+    }
+    
+    .contact-info-grid { 
+        margin-bottom: 1.5rem; 
+    }
+    
+    /* Contact items in one line using FLEXBOX */
+    .contact-items-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        justify-content: space-between;
+    }
+    
+    .contact-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px var(--shadow-color);
+        transition: all 0.4s ease;
+        border: 2px solid var(--overlay-color);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        text-align: left;
+    }
+
+    .contact-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--accent-gradient);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+
+    .contact-item:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: var(--accent-color);
+    }
+
+    .contact-item:hover::before {
+        opacity: 0.05;
+    }
+    
+    .contact-icon {
+        background: var(--accent-gradient);
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        box-shadow: 0 3px 12px var(--shadow-color);
+        transition: all 0.4s ease;
+    }
+
+    .contact-item:hover .contact-icon {
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+    
+    .contact-details {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .contact-details h4 {
+        color: var(--accent-color);
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+        text-shadow: 0 0 4px var(--shadow-color);
+        line-height: 1.2;
+    }
+    
+    .contact-details p { 
+        color: var(--text-color); 
+        margin: 0; 
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+        opacity: 0.9;
+        font-size: 0.85rem;
+        line-height: 1.3;
+    }
+    
+    .social-links h3 {
+        font-size: 1.4rem;
+        color: var(--accent-color);
+        margin-bottom: 1.2rem;
+        text-shadow: 0 0 8px var(--shadow-color);
+        text-align: center;
+    }
+    
+    /* Social grid with FLEXBOX */
+    .social-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: center;
+    }
+    
+    /* Social link with border radius format */
+    .social-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 55px;
+        height: 55px;
+        background: var(--card-bg);
+        border-radius: 16px;
+        text-decoration: none;
+        color: var(--text-color);
+        box-shadow: 0 4px 15px var(--shadow-color);
+        transition: all 0.4s ease;
+        border: 2px solid var(--overlay-color);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .social-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--accent-gradient);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: -1;
+    }
+
+    .social-link:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: var(--accent-color);
+        color: white;
+    }
+
+    .social-link:hover::before {
+        opacity: 1;
+    }
+    
+    /* Platform-specific hover colors - now with white icons on hover */
+    .social-link:hover .ri-whatsapp-fill,
+    .social-link:hover .ri-twitter-fill,
+    .social-link:hover .ri-linkedin-fill,
+    .social-link:hover .ri-facebook-fill,
+    .social-link:hover .ri-instagram-line,
+    .social-link:hover .ri-briefcase-fill,
+    .social-link:hover .ri-star-fill,
+    .social-link:hover .ri-rocket-fill,
+    .social-link:hover .ri-skype-fill,
+    .social-link:hover .ri-github-fill {
+        color: white !important;
+    }
+    
+    .social-link i { 
+        font-size: 1.4rem; 
+        transition: all 0.4s ease;
+    }
+    
+    /* Hide text span for icon-only layout */
+    .social-link span { 
+        display: none;
+    }
+    
+    .contact-form {
+        background: var(--card-bg);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px var(--shadow-color);
+        border: 2px solid var(--overlay-color);
+        backdrop-filter: blur(10px);
+        transition: all 0.4s ease;
+    }
+
+    .contact-form:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px var(--shadow-color);
+        border-color: var(--accent-color);
+    }
+    
+    .form-group { 
+        margin-bottom: 1.2rem; 
+    }
+    
+    .input-with-icon { 
+        position: relative; 
+    }
+    
+    .input-with-icon i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent-color);
+        font-size: 1.1rem;
+        z-index: 2;
+        text-shadow: 0 0 8px var(--shadow-color);
+        transition: all 0.4s ease;
+    }
+    
+    .input-with-icon.textarea-icon i { 
+        top: 1.2rem; 
+        transform: none; 
+    }
+    
+    .input-with-icon input,
+    .input-with-icon textarea {
+        width: 100%;
+        padding: 0.9rem 0.9rem 0.9rem 2.8rem;
+        border: 2px solid var(--overlay-color);
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        transition: all 0.4s ease;
+        background: var(--overlay-color);
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+        color: var(--text-color);
+        box-shadow: 0 3px 12px var(--shadow-color);
+    }
+
+    .input-with-icon input::placeholder,
+    .input-with-icon textarea::placeholder {
+        color: var(--text-color);
+        opacity: 0.7;
+        font-size: 0.9rem;
+    }
+    
+    .input-with-icon.textarea-icon textarea {
+        padding-left: 2.8rem;
+        resize: vertical;
+        min-height: 120px;
+    }
+    
+    .input-with-icon input:focus,
+    .input-with-icon textarea:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        background: var(--card-bg);
+        box-shadow: 0 0 0 3px var(--shadow-color);
+        transform: translateY(-2px);
+    }
+
+    .input-with-icon:focus-within i {
+        color: var(--accent-color);
+        transform: translateY(-50%) scale(1.1);
+    }
+    
+    .submit-btn {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+        padding: 0.9rem 1.5rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        box-shadow: 0 4px 15px var(--shadow-color);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.6s;
+    }
+
+    .submit-btn:hover::before {
+        left: 100%;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px var(--shadow-color);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Success message styling */
+    .success-message {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 0.9rem 1.2rem;
+        border-radius: 12px;
+        margin-bottom: 1.2rem;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        display: none;
+        animation: slideDown 0.5s ease;
+        font-size: 0.9rem;
+    }
+
+    .success-message.show {
+        display: block;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-15px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Loading animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    /* Error state for form inputs */
+    .input-with-icon input.error,
+    .input-with-icon textarea.error {
+        border-color: #ff4757;
+        box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
+    }
+
+    /* Contact header with improved styling */
+    .contact-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .contact-header h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 15px var(--shadow-color);
+    }
+
+    .contact-header p {
+        font-size: 0.9rem;
+        color: var(--text-color);
+        opacity: 0.8;
+        max-width: 100%;
+        margin: 0 auto;
+        line-height: 1.5;
+        padding: 0 0.5rem;
+    }
+
+    .text-wrap-handler {
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+        max-width: 100% !important;
+        white-space: normal !important;
+    }
+
+    /* Animation for contact items */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .contact-item,
+    .social-link,
+    .contact-form {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    /* Staggered animations */
+    .contact-form { animation-delay: 0.1s; }
+    .contact-item:nth-child(1) { animation-delay: 0.2s; }
+    .contact-item:nth-child(2) { animation-delay: 0.3s; }
+    .contact-item:nth-child(3) { animation-delay: 0.4s; }
+    .social-link:nth-child(1) { animation-delay: 0.5s; }
+    .social-link:nth-child(2) { animation-delay: 0.6s; }
+    .social-link:nth-child(3) { animation-delay: 0.7s; }
+    .social-link:nth-child(4) { animation-delay: 0.8s; }
+    .social-link:nth-child(5) { animation-delay: 0.9s; }
+    .social-link:nth-child(6) { animation-delay: 1.0s; }
+
+    /* ========== MEDIA QUERIES ========== */
+
+    /* Tablets (601px - 768px) */
+    @media (min-width: 601px) {
+        .page-section {
+            padding: 1.5rem;
+        }
+        
+        .contact-content {
+            gap: 2.5rem;
+            max-width: 700px;
+        }
+        
+        .contact-items-row {
+            flex-direction: row;
+            gap: 0.8rem;
+        }
+        
+        .contact-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.8rem;
+            padding: 1.2rem;
+            flex: 1;
+        }
+        
+        .contact-details {
+            align-items: center;
+        }
+        
+        .contact-details h4 {
+            font-size: 1rem;
+        }
+        
+        .contact-details p {
+            font-size: 0.9rem;
+        }
+        
+        .social-link {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .social-link i {
+            font-size: 1.5rem;
+        }
+        
+        .contact-header h2 {
+            font-size: 1.8rem;
+        }
+        
+        .contact-header p {
+            font-size: 1rem;
+        }
+        
+        .contact-info-section h3,
+        .contact-form-section h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Laptops (769px - 992px) */
+    @media (min-width: 769px) {
+        .page-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .contact-content {
+            flex-direction: row;
+            gap: 3rem;
+            max-width: 900px;
+        }
+        
+        /* Tablet layout - form on left, info on right */
+        .contact-form-section {
+            order: 1;
+            flex: 1;
+        }
+        
+        .contact-info-section {
+            order: 2;
+            flex: 1;
+        }
+        
+        .contact-items-row {
+            gap: 1rem;
+        }
+        
+        .contact-item {
+            padding: 1.5rem 1rem;
+            gap: 1rem;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+        
+        .contact-details h4 {
+            font-size: 1.1rem;
+        }
+        
+        .contact-details p {
+            font-size: 0.95rem;
+        }
+        
+        .social-grid {
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 65px;
+            height: 65px;
+        }
+        
+        .social-link i {
+            font-size: 1.6rem;
+        }
+        
+        .contact-form {
+            padding: 2rem;
+        }
+        
+        .contact-header h2 {
+            font-size: 2.2rem;
+        }
+        
+        .contact-header p {
+            font-size: 1.1rem;
+            max-width: 600px;
+        }
+        
+        .contact-info-section h3,
+        .contact-form-section h3 {
+            font-size: 1.6rem;
+            text-align: left;
+        }
+    }
+
+    /* Large Screens (993px - 1200px) */
+    @media (min-width: 993px) {
+        .page-section {
+            padding: 3rem 2rem;
+        }
+        
+        .contact-content {
+            gap: 4rem;
+            max-width: 1100px;
+        }
+        
+        .contact-items-row {
+            gap: 1.2rem;
+        }
+        
+        .contact-item {
+            padding: 2rem 1.5rem;
+            gap: 1.2rem;
+        }
+        
+        .contact-icon {
+            width: 55px;
+            height: 55px;
+            font-size: 1.4rem;
+        }
+        
+        .contact-details h4 {
+            font-size: 1.15rem;
+        }
+        
+        .contact-details p {
+            font-size: 1rem;
+        }
+        
+        .social-grid {
+            gap: 1rem;
+        }
+        
+        .social-link {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .social-link i {
+            font-size: 1.7rem;
+        }
+        
+        .contact-form {
+            padding: 2.5rem;
+        }
+        
+        .contact-header h2 {
+            font-size: 2.5rem;
+        }
+        
+        .contact-header p {
+            font-size: 1.15rem;
+            max-width: 600px;
+        }
+        
+        .contact-info-section h3,
+        .contact-form-section h3 {
+            font-size: 1.8rem;
+        }
+        
+        .input-with-icon input,
+        .input-with-icon textarea {
+            font-size: 1rem;
+            padding: 1rem 1rem 1rem 3rem;
+        }
+        
+        .submit-btn {
+            font-size: 1rem;
+            padding: 1rem 2rem;
+        }
+    }
+
+    /* Extra Large Screens (1201px and above) */
+    @media (min-width: 1201px) {
+        .contact-content {
+            max-width: 1200px;
+        }
+        
+        .contact-items-row {
+            gap: 1.5rem;
+        }
+        
+        .contact-item {
+            padding: 2.5rem 2rem;
+            gap: 1.5rem;
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+        
+        .contact-details h4 {
+            font-size: 1.2rem;
+        }
+        
+        .social-link {
+            width: 75px;
+            height: 75px;
+        }
+        
+        .social-link i {
+            font-size: 1.8rem;
+        }
+        
+        .contact-header h2 {
+            font-size: 2.8rem;
+        }
+        
+        .contact-header p {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Small Mobile Optimization (below 400px) */
+    @media (max-width: 400px) {
+        .page-section {
+            padding: 0.8rem;
+        }
+        
+        .contact-content {
+            gap: 1.5rem;
+            max-width: 100%;
+        }
+        
+        .contact-item {
+            padding: 0.8rem;
+            gap: 0.8rem;
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+        
+        .contact-details h4 {
+            font-size: 0.9rem;
+        }
+        
+        .contact-details p {
+            font-size: 0.8rem;
+        }
+        
+        .social-link {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .social-link i {
+            font-size: 1.3rem;
+        }
+        
+        .contact-form {
+            padding: 1.2rem;
+        }
+        
+        .contact-header h2 {
+            font-size: 1.4rem;
+        }
+        
+        .contact-header p {
+            font-size: 0.85rem;
+        }
+    }
+
+    /* Container styling */
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    /* Touch optimization for mobile */
+    @media (hover: none) {
+        .contact-item:hover,
+        .social-link:hover,
+        .contact-form:hover,
+        .submit-btn:hover {
+            transform: none;
+        }
+        
+        .contact-item:active,
+        .social-link:active,
+        .contact-form:active,
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <!-- Improved header section -->
+        <div class="contact-header">
+            <h2>Let's Work Together</h2>
+            <p>I'm always interested in new opportunities and exciting projects. Feel free to reach out and let's discuss how we can collaborate!</p>
+        </div>
+
+        <div class="contact-content">
+            <!-- Contact Form Section - Now comes first on mobile -->
+            <div class="contact-form-section">
+                <h3 class="text-wrap-handler">Send Me a Message</h3>
+                
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage">
+                    <i class="ri-checkbox-circle-line"></i> Thank you! Your message has been sent successfully.
+                </div>
+
+                <form class="contact-form" id="contactForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="ri-user-line"></i>
+                            <input type="text" id="name" name="name" placeholder="Your Full Name" required class="text-wrap-handler">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="ri-mail-line"></i>
+                            <input type="email" id="email" name="email" placeholder="Your Email Address" required class="text-wrap-handler">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-with-icon textarea-icon">
+                            <i class="ri-message-line"></i>
+                            <textarea id="message" name="message" placeholder="Tell me about your project or inquiry..." rows="5" required class="text-wrap-handler"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn text-wrap-handler">
+                        <i class="ri-send-plane-line"></i>
+                        Send Message
+                    </button>
+                </form>
+            </div>
+
+            <!-- Contact Information Section - Now comes second on mobile -->
+            <div class="contact-info-section">
+                <h3 class="text-wrap-handler">Contact Information</h3>
+                <div class="contact-info-grid">
+                    <!-- Contact items in one line using FLEXBOX -->
+                    <div class="contact-items-row">
+                        {% if contact_info %}
+                        <!-- Email comes first -->
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="ri-mail-line"></i></div>
+                            <div class="contact-details">
+                                <h4 class="text-wrap-handler">Email</h4>
+                                <p class="text-wrap-handler">{{ contact_info.email|linebreaksbr }}</p>
+                            </div>
+                        </div>
+                        <!-- Address comes second -->
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="ri-map-pin-line"></i></div>
+                            <div class="contact-details">
+                                <h4 class="text-wrap-handler">Address</h4>
+                                <p class="text-wrap-handler">{{ contact_info.address|linebreaksbr }}</p>
+                            </div>
+                        </div>
+                        <!-- Phone comes third -->
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="ri-phone-line"></i></div>
+                            <div class="contact-details">
+                                <h4 class="text-wrap-handler">Phone</h4>
+                                <p class="text-wrap-handler">{{ contact_info.phone|linebreaksbr }}</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Fallback if no contact info -->
+                        <!-- Email first -->
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="ri-mail-line"></i></div>
+                            <div class="contact-details">
+                                <h4 class="text-wrap-handler">Email</h4>
+                                <p class="text-wrap-handler">your.email@example.com</p>
+                            </div>
+                        </div>
+                        <!-- Address second -->
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="ri-map-pin-line"></i></div>
+                            <div class="contact-details">
+                                <h4 class="text-wrap-handler">Address</h4>
+                                <p class="text-wrap-handler">Your City, Country</p>
+                            </div>
+                        </div>
+                        <!-- Phone third -->
+                        <div class="contact-item">
+                            <div class="contact-icon"><i class="ri-phone-line"></i></div>
+                            <div class="contact-details">
+                                <h4 class="text-wrap-handler">Phone</h4>
+                                <p class="text-wrap-handler">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Connect With Me Section -->
+                <div class="social-links">
+                    <h3 class="text-wrap-handler">Connect With Me</h3>
+                    <div class="social-grid">
+                        <!-- WhatsApp -->
+                        {% if contact_info.whatsapp_url %}
+                        <a href="{% if 'http' in contact_info.whatsapp_url %}{{ contact_info.whatsapp_url }}{% else %}https://wa.me/{{ contact_info.whatsapp_url|cut:'+' }}{% endif %}" target="_blank" class="social-link" title="WhatsApp">
+                            <i class="ri-whatsapp-fill"></i>
+                            <span class="text-wrap-handler">WhatsApp</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Twitter -->
+                        {% if contact_info.twitter_url %}
+                        <a href="{{ contact_info.twitter_url }}" target="_blank" class="social-link" title="Twitter">
+                            <i class="ri-twitter-fill"></i>
+                            <span class="text-wrap-handler">Twitter</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- LinkedIn -->
+                        {% if contact_info.linkedin_url %}
+                        <a href="{{ contact_info.linkedin_url }}" target="_blank" class="social-link" title="LinkedIn">
+                            <i class="ri-linkedin-fill"></i>
+                            <span class="text-wrap-handler">LinkedIn</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Facebook -->
+                        {% if contact_info.facebook_url %}
+                        <a href="{{ contact_info.facebook_url }}" target="_blank" class="social-link" title="Facebook">
+                            <i class="ri-facebook-fill"></i>
+                            <span class="text-wrap-handler">Facebook</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Instagram -->
+                        {% if contact_info.instagram_url %}
+                        <a href="{{ contact_info.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="ri-instagram-line"></i>
+                            <span class="text-wrap-handler">Instagram</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Freelancer -->
+                        {% if contact_info.freelancer_url %}
+                        <a href="{{ contact_info.freelancer_url }}" target="_blank" class="social-link" title="Freelancer">
+                            <i class="ri-briefcase-fill"></i>
+                            <span class="text-wrap-handler">Freelancer</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Fiverr -->
+                        {% if contact_info.fiverr_url %}
+                        <a href="{{ contact_info.fiverr_url }}" target="_blank" class="social-link" title="Fiverr">
+                            <i class="ri-star-fill"></i>
+                            <span class="text-wrap-handler">Fiverr</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Upwork -->
+                        {% if contact_info.upwork_url %}
+                        <a href="{{ contact_info.upwork_url }}" target="_blank" class="social-link" title="Upwork">
+                            <i class="ri-rocket-fill"></i>
+                            <span class="text-wrap-handler">Upwork</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Skype -->
+                        {% if contact_info.skype_url %}
+                        <a href="{% if 'http' in contact_info.skype_url %}{{ contact_info.skype_url }}{% else %}skype:{{ contact_info.skype_url }}?chat{% endif %}" class="social-link" title="Skype">
+                            <i class="ri-skype-fill"></i>
+                            <span class="text-wrap-handler">Skype</span>
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Fallback social links if none provided -->
+                        {% if not contact_info.whatsapp_url and not contact_info.twitter_url and not contact_info.linkedin_url and not contact_info.facebook_url and not contact_info.instagram_url and not contact_info.freelancer_url and not contact_info.fiverr_url and not contact_info.upwork_url and not contact_info.skype_url %}
+                        <a href="#" class="social-link" title="LinkedIn">
+                            <i class="ri-linkedin-fill"></i>
+                            <span class="text-wrap-handler">LinkedIn</span>
+                        </a>
+                        <a href="#" class="social-link" title="GitHub">
+                            <i class="ri-github-fill"></i>
+                            <span class="text-wrap-handler">GitHub</span>
+                        </a>
+                        <a href="#" class="social-link" title="Twitter">
+                            <i class="ri-twitter-fill"></i>
+                            <span class="text-wrap-handler">Twitter</span>
+                        </a>
+                        <a href="#" class="social-link" title="WhatsApp">
+                            <i class="ri-whatsapp-fill"></i>
+                            <span class="text-wrap-handler">WhatsApp</span>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add scroll effect to navbar
+    window.addEventListener('scroll', function() {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 100) {
+            nav.style.background = document.body.classList.contains('dark-mode') 
+                ? 'rgba(26, 20, 48, 0.95)' 
+                : 'rgba(250, 248, 255, 0.98)';
+        } else {
+            nav.style.background = document.body.classList.contains('dark-mode')
+                ? 'rgba(26, 20, 48, 0.9)'
+                : 'rgba(250, 248, 255, 0.95)';
+        }
+    });
+
+    // Touch optimization for mobile devices
+    if ('ontouchstart' in window) {
+        document.querySelectorAll('.contact-item, .social-link, .contact-form').forEach(element => {
+            element.style.cursor = 'pointer';
+            
+            element.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            element.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Form validation function
+    function validateForm(formData) {
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const message = formData.get('message');
+        
+        let isValid = true;
+        
+        // Clear previous error states
+        document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+        
+        // Validate name
+        if (!name || name.trim().length < 2) {
+            document.getElementById('name').classList.add('error');
+            isValid = false;
+        }
+        
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            document.getElementById('email').classList.add('error');
+            isValid = false;
+        }
+        
+        // Validate message
+        if (!message || message.trim().length < 10) {
+            document.getElementById('message').classList.add('error');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const contactForm = document.getElementById('contactForm');
+        const successMessage = document.getElementById('successMessage');
+        
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(contactForm);
+                const submitBtn = contactForm.querySelector('.submit-btn');
+                const originalText = submitBtn.innerHTML;
+                
+                // Validate form
+                if (!validateForm(formData)) {
+                    alert('Please fill in all fields correctly.');
+                    return;
+                }
+                
+                submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sending...';
+                submitBtn.disabled = true;
+                
+                fetch('/submit-contact/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        successMessage.classList.add('show');
+                        contactForm.reset();
+                        
+                        // Hide success message after 5 seconds
+                        setTimeout(() => {
+                            successMessage.classList.remove('show');
+                        }, 5000);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error sending message. Please try again.');
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
+            });
+
+            // Real-time validation
+            const inputs = contactForm.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('error')) {
+                        this.classList.remove('error');
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+</head>
+<body>
+    <h1>Edit User</h1>
+    
+    {% if user %}
+    <form action="/users/{{ user.id }}/update/" method="post">
+        {% csrf_token %}
+        <div>
+            <label>Name:</label>
+            <input type="text" name="name" value="{{ user.name }}" required>
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" name="email" value="{{ user.email }}" required>
+        </div>
+        <div>
+            <label>Age:</label>
+            <input type="number" name="age" value="{{ user.age }}" required>
+        </div>
+        <button type="submit">Update User</button>
+    </form>
+    {% else %}
+        <p>User not found.</p>
+    {% endif %}
+    
+    <br>
+    <a href="/users/{{ user.id }}/">Cancel</a> |
+    <a href="/users/">Back to User List</a>
+</body>
+</html>

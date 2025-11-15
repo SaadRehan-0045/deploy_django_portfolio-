@@ -1,0 +1,740 @@
+{% extends 'portfolio/base.html' %}
+
+{% block extra_css %}
+<style>
+    /* About Section - Responsive Flexbox Layout */
+    .about-main-section { 
+        min-height: 100vh;
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* Mobile First - Single Column Layout */
+    .about-flex-container { 
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .about-text { 
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--text-color);
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        max-width: 100%;
+        text-shadow: 0 0 5px var(--shadow-color);
+        text-align: center;
+        width: 100%;
+        padding: 0;
+    }
+    
+    .about-image { 
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        padding: 0;
+    }
+    
+    /* UPDATED: Enhanced Asymmetric Design from home.html */
+    .asymmetric-container {
+        width: 200px;
+        height: 250px;
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .asymmetric-main {
+        width: 180px;
+        height: 220px;
+        background: var(--card-bg);
+        border-radius: 20px 20px 20px 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        box-shadow: 0 12px 30px var(--shadow-color);
+        transition: all 0.4s ease;
+        z-index: 2;
+        border: 2px solid var(--overlay-color);
+        backdrop-filter: blur(10px);
+    }
+
+    .asymmetric-accent {
+        width: 160px;
+        height: 200px;
+        background: var(--accent-gradient);
+        border-radius: 0 20px 20px 20px;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        opacity: 0.3;
+        transition: all 0.4s ease;
+        z-index: 1;
+    }
+
+    .asymmetric-container:hover .asymmetric-main {
+        transform: translate(-8px, -8px) rotate(-2deg);
+    }
+
+    .asymmetric-container:hover .asymmetric-accent {
+        transform: translate(8px, 8px) rotate(2deg);
+        opacity: 0.5;
+    }
+
+    /* UPDATED: Converted to background-image approach */
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        background: var(--overlay-color);
+        background-size: 100% 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .asymmetric-container:hover .profile-image {
+        transform: scale(1.05);
+    }
+
+    .asymmetric-placeholder {
+        width: 100%;
+        height: 100%;
+        background: var(--card-bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 0.8rem;
+        gap: 0.5rem;
+    }
+
+    .asymmetric-placeholder i {
+        font-size: 2rem;
+        opacity: 0.7;
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .asymmetric-container {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    /* Section Title */
+    .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 0 0.5rem;
+    }
+
+    .section-title h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px var(--shadow-color);
+    }
+
+    .section-title .divider {
+        width: 50px;
+        height: 3px;
+        background: var(--accent-gradient);
+        margin: 0 auto;
+        border-radius: 2px;
+        box-shadow: 0 0 10px var(--shadow-color);
+    }
+
+    /* Text content wrapper */
+    .text-content-wrapper {
+        width: 100%;
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        white-space: pre-line;
+        line-height: 1.5;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .emergency-text-wrap {
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        hyphens: auto !important;
+        max-width: 100% !important;
+        white-space: pre-line !important;
+    }
+
+    .scrollable-content {
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 8px;
+        margin-top: 1rem;
+    }
+
+    .scrollable-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-track {
+        background: var(--overlay-color);
+        border-radius: 3px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb {
+        background: var(--accent-color);
+        border-radius: 3px;
+    }
+
+    .scrollable-content::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-gradient);
+    }
+
+    /* Timeline Section */
+    .timeline-section { 
+        margin: 2.5rem 0;
+        min-height: auto;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .timeline-section h3 { 
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.4rem;
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 15px var(--shadow-color);
+    }
+    
+    .timeline { 
+        margin: 1rem 0;
+        position: relative;
+        padding: 15px 10px;
+        width: 100%;
+    }
+    
+    .timeline-item { 
+        margin-bottom: 25px;
+        position: relative;
+        padding-left: 20px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        transition: all 0.3s ease;
+        max-width: 100%;
+    }
+
+    .timeline-item:hover {
+        transform: translateY(-2px);
+    }
+
+    .timeline-item:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent-color);
+        border-radius: 50%;
+        z-index: 2;
+    }
+
+    .timeline-item:after {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 16px;
+        bottom: -25px;
+        width: 2px;
+        background-color: var(--overlay-color);
+        z-index: 1;
+    }
+
+    .timeline-item:last-child:after {
+        display: none;
+    }
+    
+    .timeline-header { 
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.8rem;
+        align-items: flex-start;
+    }
+    
+    .timeline-title { 
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--text-color);
+        word-wrap: break-word;
+        max-width: 100%;
+    }
+    
+    .timeline-period { 
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-weight: 500;
+    }
+    
+    .timeline-subtitle { 
+        font-size: 0.9rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        word-wrap: break-word;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+    
+    .timeline-description { 
+        font-size: 0.85rem;
+        color: var(--text-color);
+        line-height: 1.5;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-line;
+        opacity: 0.8;
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--text-color);
+        opacity: 0.7;
+        font-style: italic;
+        padding: 1.5rem;
+        background: var(--overlay-color);
+        border-radius: 10px;
+        border: 2px dashed var(--overlay-color);
+        max-width: 100%;
+        margin: 0 auto;
+        font-size: 0.9rem;
+    }
+
+    /* ========== MEDIA QUERIES ========== */
+
+    /* Tablets (601px - 768px) */
+    @media (min-width: 601px) {
+        .about-main-section {
+            padding: 1.5rem;
+        }
+        
+        .about-flex-container {
+            flex-direction: row;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        
+        .about-text {
+            font-size: 0.95rem;
+            text-align: left;
+            padding-right: 1rem;
+        }
+        
+        .about-image {
+            justify-content: flex-start;
+            padding-left: 1rem;
+        }
+        
+        .text-content-wrapper {
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        
+        .section-title h2 {
+            font-size: 1.8rem;
+        }
+        
+        /* UPDATED: Asymmetric container for tablets */
+        .asymmetric-container {
+            width: 240px;
+            height: 300px;
+        }
+        
+        .asymmetric-main {
+            width: 220px;
+            height: 270px;
+        }
+        
+        .asymmetric-accent {
+            width: 200px;
+            height: 250px;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.5rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.05rem;
+        }
+        
+        .timeline-period {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Laptops (769px - 992px) */
+    @media (min-width: 769px) {
+        .about-main-section {
+            padding: 2rem 1.5rem;
+        }
+        
+        .about-flex-container {
+            gap: 3rem;
+        }
+        
+        .about-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+        }
+        
+        .text-content-wrapper {
+            font-size: 1rem;
+        }
+        
+        /* UPDATED: Asymmetric container for laptops */
+        .asymmetric-container {
+            width: 280px;
+            height: 350px;
+        }
+        
+        .asymmetric-main {
+            width: 250px;
+            height: 310px;
+        }
+        
+        .asymmetric-accent {
+            width: 230px;
+            height: 290px;
+        }
+        
+        .asymmetric-placeholder {
+            font-size: 0.9rem;
+        }
+        
+        .asymmetric-placeholder i {
+            font-size: 2.5rem;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.6rem;
+        }
+        
+        .timeline-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .timeline-title {
+            font-size: 1.1rem;
+            max-width: 70%;
+        }
+        
+        .timeline-period {
+            font-size: 0.95rem;
+        }
+        
+        .timeline-subtitle {
+            font-size: 1rem;
+        }
+        
+        .timeline-description {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Large Screens (993px - 1200px) */
+    @media (min-width: 993px) {
+        .about-main-section {
+            padding: 3rem 2rem;
+        }
+        
+        .about-flex-container {
+            gap: 4rem;
+        }
+        
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+        }
+        
+        /* UPDATED: Asymmetric container for large screens */
+        .asymmetric-container {
+            width: 320px;
+            height: 400px;
+        }
+        
+        .asymmetric-main {
+            width: 280px;
+            height: 350px;
+        }
+        
+        .asymmetric-accent {
+            width: 260px;
+            height: 330px;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.8rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.15rem;
+        }
+        
+        .timeline-period {
+            font-size: 1rem;
+        }
+    }
+
+    /* Extra Large Screens (1201px and above) */
+    @media (min-width: 1201px) {
+        .about-flex-container {
+            gap: 5rem;
+        }
+        
+        .about-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+        }
+        
+        /* UPDATED: Asymmetric container for extra large screens */
+        .asymmetric-container {
+            width: 350px;
+            height: 440px;
+        }
+        
+        .asymmetric-main {
+            width: 310px;
+            height: 390px;
+        }
+        
+        .asymmetric-accent {
+            width: 290px;
+            height: 370px;
+        }
+        
+        .timeline-section h3 {
+            font-size: 2rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.2rem;
+        }
+    }
+
+    /* Small Mobile Optimization (below 400px) */
+    @media (max-width: 400px) {
+        .about-main-section {
+            padding: 0.8rem;
+        }
+        
+        .about-text {
+            font-size: 0.85rem;
+        }
+        
+        /* UPDATED: Asymmetric container for small mobile */
+        .asymmetric-container {
+            width: 180px;
+            height: 220px;
+        }
+        
+        .asymmetric-main {
+            width: 160px;
+            height: 190px;
+        }
+        
+        .asymmetric-accent {
+            width: 140px;
+            height: 170px;
+        }
+        
+        .asymmetric-placeholder {
+            font-size: 0.7rem;
+        }
+        
+        .asymmetric-placeholder i {
+            font-size: 1.5rem;
+        }
+        
+        .section-title h2 {
+            font-size: 1.4rem;
+        }
+        
+        .text-content-wrapper {
+            font-size: 0.85rem;
+        }
+        
+        .timeline-section h3 {
+            font-size: 1.3rem;
+        }
+        
+        .timeline-title {
+            font-size: 0.95rem;
+        }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) {
+        .asymmetric-container:hover .asymmetric-main,
+        .asymmetric-container:hover .asymmetric-accent {
+            transform: none;
+        }
+        
+        .asymmetric-container:active .asymmetric-main {
+            transform: translate(-4px, -4px) scale(0.98);
+        }
+        
+        .asymmetric-container:active .asymmetric-accent {
+            transform: translate(4px, 4px) scale(0.98);
+        }
+    }
+
+    /* High-resolution screens */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .asymmetric-main {
+            border-width: 1.5px;
+        }
+    }
+
+    /* Reduced motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .asymmetric-container,
+        .asymmetric-main .profile-image,
+        .asymmetric-main,
+        .asymmetric-accent {
+            animation: none;
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-main-section">
+    <div class="section-title">
+        <h2>About Me</h2>
+        <div class="divider"></div>
+    </div>
+    
+    <div class="about-flex-container">
+        <div class="about-text">
+            {% if about.personal_story %}
+                <div class="text-content-wrapper emergency-text-wrap {% if about.personal_story|length > 2000 %}scrollable-content{% endif %}">
+                    {{ about.personal_story|linebreaksbr }}
+                </div>
+            {% else %}
+                <div class="text-content-wrapper">
+                    I am a Software Engineer, specializing in full-stack development. My journey began with curiosity about how digital platforms work, and has evolved into building impactful applications using modern technologies. 
+                    My goal is to leverage my engineering background to create high-quality, scalable solutions while continuously adapting to new technologies.
+                </div>
+            {% endif %}
+        </div>
+        <div class="about-image">
+            <!-- UPDATED: Enhanced Asymmetric Design from home.html -->
+            <div class="asymmetric-container">
+                <div class="asymmetric-accent"></div>
+                <div class="asymmetric-main">
+                    {% if about.about_img_url %}
+                        <div class="profile-image" style="background-image: url('{{ about.about_img_url }}')"></div>
+                    {% else %}
+                        <div class="asymmetric-placeholder">
+                            <i class="fas fa-user-tie"></i>
+                            <span>PROFILE IMAGE</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-section">
+        <h3>Education</h3>
+        <div class="timeline">
+            {% for edu in education %}
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <div class="timeline-title">{{ edu.degree|linebreaksbr }}</div>
+                    <div class="timeline-period">{{ edu.year_start }} - {{ edu.year_end|default:"Present" }}</div>
+                </div>
+                <div class="timeline-subtitle">{{ edu.institution|linebreaksbr }}</div>
+                {% if edu.description %}
+                <div class="timeline-description emergency-text-wrap {% if edu.description|length > 500 %}scrollable-content{% endif %}">
+                    {{ edu.description|linebreaksbr }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                No education information available.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="timeline-section">
+        <h3>Work Experience</h3>
+        <div class="timeline">
+            {% for exp in work_experience %}
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <div class="timeline-title">{{ exp.job_title|linebreaksbr }}</div>
+                    <div class="timeline-period">{{ exp.year_start }} - {{ exp.year_end|default:"Present" }}</div>
+                </div>
+                <div class="timeline-subtitle">{{ exp.company|linebreaksbr }}</div>
+                {% if exp.description %}
+                <div class="timeline-description emergency-text-wrap {% if exp.description|length > 500 %}scrollable-content{%endif %}">
+                    {{ exp.description|linebreaksbr }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                No work experience information available.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
